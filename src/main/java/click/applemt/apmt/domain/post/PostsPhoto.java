@@ -1,6 +1,7 @@
 package click.applemt.apmt.domain.post;
 
 import click.applemt.apmt.domain.post.Post;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter @Setter
 @Table(name = "posts_photo")
+@Builder
 public class PostsPhoto {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
