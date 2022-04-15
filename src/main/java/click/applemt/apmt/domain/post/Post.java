@@ -42,6 +42,6 @@ public class Post extends BaseEntity {
     @Column(name = "posts_town")
     private String postTownCode;
 
-    @Column(name = "posts_view_count", nullable = false)
-    private int viewCount = 0;
+    private Integer view;
+
 }

@@ -1,4 +1,4 @@
-package click.applemt.apmt.repository.postrepository;
+package click.applemt.apmt.repository.postRepository;
 
 import click.applemt.apmt.domain.post.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
