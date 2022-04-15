@@ -1,31 +1,37 @@
 package click.applemt.apmt.controller.userController;
 
 import click.applemt.apmt.domain.point.AccountHistory;
+import click.applemt.apmt.security.AuthUser;
 import click.applemt.apmt.service.AccountService;
+import click.applemt.apmt.util.Time;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 public class AccountController {
 
     private final AccountService accountService;
 
-    @PostMapping("/profileItem")
-    public Result profileItem(@RequestBody UidDataDTO uid){
-      List<AccountHistory> historyList  =  accountService.myProfileAccount(uid);
+    @GetMapping("/profileItem")
+    public Result profileItem(@AuthenticationPrincipal AuthUser user){
+      List<AccountHistory> historyList  =  accountService.myProfileAccount(user.getUid());
         List<ProfileItemDto> dtoList = historyList.stream().map((e) -> {
             ProfileItemDto dto = new ProfileItemDto();
-            dto.setDate(e.getCreatedTime());
+            dto.setDate(Time.calculateTime(java.sql.Timestamp.valueOf(e.getCreatedTime())));
             dto.setPrice(e.getPrice());
-            dto.setDivision(e.getDivision().toString());
+
+            if(e.getDivision().toString().equals("DEPOSIT")){
+                dto.setDivision("입금");
+            }else if(e.getDivision().toString().equals("WITHDRAW")){
+                dto.setDivision("출금");
+            }
             dto.setTitle("계좌거래");
             return dto;
         }).toList();

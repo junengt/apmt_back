@@ -10,5 +10,5 @@ public class ProfileItemDto {
     private String title;
     private String division;
     private Long price;
-    private LocalDateTime date;
+    private String date;
 }

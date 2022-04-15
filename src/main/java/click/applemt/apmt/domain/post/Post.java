@@ -2,6 +2,7 @@ package click.applemt.apmt.domain.post;
 
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.common.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,7 @@ public class Post extends BaseEntity {
     @Column(name = "posts_id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY) //양방향 연관관계로 설계함
     @JoinColumn(name = "user_id")
     private User user;

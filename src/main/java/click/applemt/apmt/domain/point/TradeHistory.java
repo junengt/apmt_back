@@ -1,6 +1,5 @@
 package click.applemt.apmt.domain.point;
 
-import click.applemt.apmt.controller.userController.PointDTO;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.common.BaseEntity;
 import click.applemt.apmt.domain.post.Post;

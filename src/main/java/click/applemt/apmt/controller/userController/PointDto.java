@@ -3,8 +3,9 @@ package click.applemt.apmt.controller.userController;
 import lombok.Data;
 
 @Data
-public class UidDataDTO {
+public class PointDto {
 
-    private String uid;
+    private int point;
+    private boolean chargeOrRefund;
 
 }
