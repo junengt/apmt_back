@@ -18,7 +18,6 @@ public class Post extends BaseEntity {
     @Column(name = "posts_id")
     private Long id;
 
-
     @ManyToOne(fetch = LAZY) //양방향 연관관계로 설계함
     @JoinColumn(name = "user_id")
     private User user;
@@ -38,8 +37,9 @@ public class Post extends BaseEntity {
     @Column(name = "posts_status")
     @Enumerated(EnumType.STRING)
     private TradeStatus status ; //ing : 판매 중 / end : 판매 완료 / RESERVATION 예약 / HIDE 숨기기
-
     @Column(name = "posts_town")
     private String postTownCode;
+
+    private Integer view;
 
 }

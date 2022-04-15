@@ -1,6 +1,8 @@
 package click.applemt.apmt.domain;
 
+import click.applemt.apmt.controller.userController.UidDataDTO;
 import click.applemt.apmt.domain.post.Post;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,9 +22,28 @@ public class User {
     @Column(name = "firebase_uid", nullable = false)
     private String uid;
 
-    @OneToMany(mappedBy = "user") //양방향 연관관계로 설계
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY) //양방향 연관관계로 설계
     private List<Post> posts = new ArrayList<>();
 
     @Column(name = "pay_account")
     private Long account;
+
+    public User UidDataToUser(UidDataDTO uid){
+        this.uid = uid.getUid();
+        this.account = 0l;
+        return this;
+    }
+    public User newUser(String uid){
+        this.uid = uid;
+        this.account = 0l;
+        return this;
+    }
+
+    public void plusAccount(int point){
+        this.account += point;
+    }
+    public void minusAccount(int point){
+        this.account -= point;
+    }
 }

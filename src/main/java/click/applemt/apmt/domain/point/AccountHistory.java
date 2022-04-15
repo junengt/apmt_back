@@ -1,5 +1,6 @@
 package click.applemt.apmt.domain.point;
 
+import click.applemt.apmt.controller.userController.PointDTO;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.common.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -26,14 +27,20 @@ public class AccountHistory extends BaseEntity {
     @Column(name = "account_history_id")
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name="user_id")
-    private User userId;
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private AccountDivision division;
 
     private Long price;
 
+    public AccountHistory pointDtoToAccountHistory(PointDTO data, User user){
+        this.user = user;
+        this.price = Long.valueOf(data.getPoint());
+        this.division = data.isChargeOrRefund() ? AccountDivision.DEPOSIT : AccountDivision.WITHDRAW;
+        return this;
+    }
 
 }

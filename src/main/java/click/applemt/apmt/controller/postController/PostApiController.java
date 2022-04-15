@@ -1,6 +1,6 @@
-package click.applemt.apmt.controller.postcontroller;
+package click.applemt.apmt.controller.postController;
 
-import click.applemt.apmt.service.postservice.PostService;
+import click.applemt.apmt.service.PostService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

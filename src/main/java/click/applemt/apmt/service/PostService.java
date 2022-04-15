@@ -1,10 +1,10 @@
-package click.applemt.apmt.service.postservice;
+package click.applemt.apmt.service;
 
 import click.applemt.apmt.domain.post.Post;
 import click.applemt.apmt.domain.post.PostsPhoto;
-import click.applemt.apmt.repository.postrepository.PostRepository;
-import click.applemt.apmt.repository.postrepository.PostTagRepository;
-import click.applemt.apmt.repository.postrepository.PostsPhotoRepository;
+import click.applemt.apmt.repository.postRepository.PostRepository;
+import click.applemt.apmt.repository.postRepository.PostTagRepository;
+import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
