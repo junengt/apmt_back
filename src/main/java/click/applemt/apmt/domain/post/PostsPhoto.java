@@ -1,9 +1,7 @@
 package click.applemt.apmt.domain.post;
 
 import click.applemt.apmt.domain.post.Post;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 

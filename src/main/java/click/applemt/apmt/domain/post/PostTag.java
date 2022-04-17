@@ -1,7 +1,6 @@
 package click.applemt.apmt.domain.post;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -10,6 +9,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter @Setter
 @Table(name = "posts_tag")
+@Builder
 public class PostTag {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

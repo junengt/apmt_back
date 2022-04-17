@@ -4,10 +4,10 @@ import click.applemt.apmt.service.PostService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,10 +21,19 @@ public class PostApiController {
         return new Result(postService.findAllPostAndSearchKeyword(searchKeyword));
     }
 
-    @PutMapping("/posts/{id}")
+    @DeleteMapping("/posts/{id}")
     public void deletePost(@PathVariable Long id) {
         postService.deleteByPostId(id);
     }
+
+//    @PostMapping("/posts")
+//    public void savePost(@RequestPart
+//                             @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+//        Long postId = postService.savePost();
+//        postService.savePostPhotos(postId, files);
+//        postService.savePostTags(postId,);
+//
+//    }
 
     @Data
     @AllArgsConstructor

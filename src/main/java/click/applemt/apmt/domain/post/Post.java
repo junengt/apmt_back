@@ -18,7 +18,6 @@ public class Post extends BaseEntity {
     @Column(name = "posts_id")
     private Long id;
 
-
     @ManyToOne(fetch = LAZY) //양방향 연관관계로 설계함
     @JoinColumn(name = "user_id")
     private User user;

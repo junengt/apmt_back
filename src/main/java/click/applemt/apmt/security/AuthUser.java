@@ -16,7 +16,6 @@ public class AuthUser implements UserDetails, Serializable {
 
     private Long account;
     private String uid;
-    private Long id;
 
 
     @Override

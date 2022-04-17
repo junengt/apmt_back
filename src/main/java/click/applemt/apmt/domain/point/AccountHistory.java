@@ -1,16 +1,14 @@
 package click.applemt.apmt.domain.point;
 
-import click.applemt.apmt.controller.userController.PointDTO;
+import click.applemt.apmt.controller.userController.PointDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.common.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 import static javax.persistence.FetchType.*;
 
@@ -36,7 +34,7 @@ public class AccountHistory extends BaseEntity {
 
     private Long price;
 
-    public AccountHistory pointDtoToAccountHistory(PointDTO data, User user){
+    public AccountHistory pointDtoToAccountHistory(PointDto data, User user){
         this.user = user;
         this.price = Long.valueOf(data.getPoint());
         this.division = data.isChargeOrRefund() ? AccountDivision.DEPOSIT : AccountDivision.WITHDRAW;

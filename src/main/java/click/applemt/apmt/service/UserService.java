@@ -1,18 +1,19 @@
 package click.applemt.apmt.service;
 
-import click.applemt.apmt.controller.userController.PointDTO;
-import click.applemt.apmt.controller.userController.UidDataDTO;
+import click.applemt.apmt.controller.userController.PointDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.point.AccountHistory;
 import click.applemt.apmt.repository.userRepository.AccountHistoryRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
+import click.applemt.apmt.security.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Optional;
 
 
 @Service
@@ -22,24 +23,49 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final AccountHistoryRepository historyRepository;
+
+
+
+
     @Transactional
-    public User join(UidDataDTO uidData) {
-        User user = new User().UidDataToUser(uidData);
-        User findUser = userRepository.findByUid(user.getUid());
-        if(findUser == null){
-            return userRepository.save(user);
+    @Override
+    public UserDetails loadUserByUsername(String uid) throws UsernameNotFoundException {
+        //firebase 에서 가져온 token이 유효한지 확인 후 uid를 가져온다.
+
+        Optional<User> findUser = userRepository.findById(uid);
+        //가져온 uid로 우리 DB에 등록된 user인지 확인한다.
+
+        if(findUser.isPresent()){
+            //findUser가 있다면
+            User getUser = findUser.get();
+            // 가져온다.
+            AuthUser user = makeAuthUser(getUser);
+            return user;
+            // 인증정보를 security에 띄워준다. (이제 어느 메소드에서나 쓸 수 있다.)
+        }else{
+            //인증받은 토근이지만 유저가 없다면
+            User user = new User();
+            //유저 인스턴스를 새로만들어
+            user.newUser(uid);
+            userRepository.save(user);
+            //데이터베이스에 저장한다.
+            AuthUser authUser = makeAuthUser(user);
+            //마찬 가지로 인증정보를 띄운다.
+            return authUser;
         }
-        return findUser;
+
     }
 
-    public User findOne(String uid) {
-        return userRepository.findByUid(uid);
+    private AuthUser makeAuthUser(User getUser) {
+        AuthUser user = new AuthUser();
+        //UserDetails를 상속받은 user 인스턴스를 생성해준다.
+        user.setUid(getUser.getUid());
+        user.setAccount(getUser.getAccount());
+        return user;
     }
-
-
     @Transactional
-    public User pointUpdate(@RequestBody PointDTO data){
-        User findUser = userRepository.findByUid(data.getUid());
+    public User pointUpdate(PointDto data, AuthUser authUser) {
+        User findUser = userRepository.findById(authUser.getUid()).get();
         AccountHistory history = new AccountHistory().pointDtoToAccountHistory(data,findUser);
         historyRepository.save(history);
         if(data.isChargeOrRefund()){
@@ -48,12 +74,6 @@ public class UserService implements UserDetailsService {
             findUser.minusAccount(data.getPoint());
         }
         return findUser;
-    }
 
-    @Transactional
-    @Override
-    public UserDetails loadUserByUsername(String uid) throws UsernameNotFoundException {
-        return null;
     }
-    // accessToken이 firebase에서 발급한 토근이 맞는지만 확인
 }
