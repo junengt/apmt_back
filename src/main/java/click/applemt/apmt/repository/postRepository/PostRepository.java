@@ -11,14 +11,4 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post,Long>, PostRepositoryCustom {
-
-    @Query("SELECT p FROM Post p WHERE p.deleted = false")
-    List<Post> findAll();
-
-    @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.title LIKE %:searchKeyword%")
-    List<Post> findPostsBySearch(String searchKeyword);
-
-    @Modifying
-    @Query("UPDATE Post p SET p.deleted = true WHERE p.id = :postId")
-    void updatePostDelete(@Param("postId") Long postId);
 }
