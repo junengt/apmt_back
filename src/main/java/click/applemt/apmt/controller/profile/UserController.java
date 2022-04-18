@@ -1,4 +1,4 @@
-package click.applemt.apmt.controller.userController;
+package click.applemt.apmt.controller.profile;
 
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.security.AuthUser;

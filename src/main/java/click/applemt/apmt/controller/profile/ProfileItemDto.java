@@ -1,8 +1,6 @@
-package click.applemt.apmt.controller.userController;
+package click.applemt.apmt.controller.profile;
 
 import lombok.Data;
-
-import java.time.LocalDateTime;
 
 @Data
 public class ProfileItemDto {

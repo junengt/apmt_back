@@ -15,7 +15,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("SELECT p FROM Post p WHERE p.deleted = false")
     List<Post> findAll();
 
-    @Query("SELECT p FROM Post p WHERE p.deleted = false AND p.title LIKE %:searchKeyword%")
+    @Query("SELECT p  FROM Post p  WHERE p.deleted = false AND p.title LIKE %:searchKeyword%")
     List<Post> findPostsBySearch(String searchKeyword);
 
     @Modifying

@@ -1,6 +1,6 @@
 package click.applemt.apmt.domain.point;
 
-import click.applemt.apmt.controller.userController.PointDto;
+import click.applemt.apmt.controller.profile.PointDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.common.BaseEntity;
 import lombok.AllArgsConstructor;

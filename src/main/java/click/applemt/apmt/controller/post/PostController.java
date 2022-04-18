@@ -1,4 +1,4 @@
-package click.applemt.apmt.controller.postController;
+package click.applemt.apmt.controller.post;
 
 import org.springframework.stereotype.Controller;
 
