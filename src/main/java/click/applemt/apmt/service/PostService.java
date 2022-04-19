@@ -8,6 +8,17 @@ import click.applemt.apmt.repository.postRepository.*;
 import click.applemt.apmt.repository.userRepository.UserRepository;
 import click.applemt.apmt.security.AuthUser;
 import lombok.RequiredArgsConstructor;
+import click.applemt.apmt.config.FirebaseInit;
+import click.applemt.apmt.domain.post.*;
+import click.applemt.apmt.repository.postRepository.PostRepository;
+import click.applemt.apmt.repository.postRepository.PostTagRepository;
+import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
+import click.applemt.apmt.util.Time;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.auth.UserRecord;
+import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -18,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,18 +43,37 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostsPhotoRepository postsPhotoRepository;
     private final PostTagRepository postTagRepository;
-
+    private final FirebaseInit firebaseInit;
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
     public List<PostListDto> findAllPostAndSearchKeyword(String searchKeyword) {
-        if (searchKeyword == null) {
-            return postRepository.findAll().stream()
-                    .map(p -> new PostListDto(p.getId(), p.getTitle(), p.getPrice(), p.getContent()))
-                    .collect(Collectors.toList());
-        } else {
             return postRepository.findPostsBySearch(searchKeyword).stream()
-                    .map(p -> new PostListDto(p.getId(), p.getTitle(), p.getPrice(), p.getContent()))
+                    .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), p.getPhotoList().get(0).getPhotoPath() ,p.getTitle(), p.getPrice(), p.getContent(),p.getTown(),p.getStatus()))
                     .collect(Collectors.toList());
-        }
+    }
+
+    public PostDto findOne(Long postId, FirebaseToken decodedToken) throws FirebaseAuthException {
+        Post findPost = postRepository.findById(postId).get();
+        String uid = findPost.getUser().getUid();
+        UserRecord user = FirebaseAuth.getInstance().getUser(uid);
+
+        PostDto postDto = new PostDto();
+        postDto.setContent(findPost.getContent());
+        postDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(findPost.getCreatedTime())));
+        postDto.setCreatorId(uid);
+        postDto.setCreatorName(user.getDisplayName());
+        postDto.setProfileImg(user.getPhotoUrl());
+        postDto.setPhotoList(findPost.getPhotoList());
+        postDto.setTags(findPost.getPostTags());
+        postDto.setTitle(findPost.getTitle());
+        if(decodedToken != null)
+        postDto.setOwner(decodedToken.getUid().equals(uid));
+        postDto.setStatus(findPost.getStatus());
+        postDto.setId(findPost.getId());
+        postDto.setRegion(findPost.getTown());
+        postDto.setPrice(findPost.getPrice());
+
+        return postDto;
+
     }
 
     //Post삭제 (실제로는 delete가 아니라 update(삭제 플래그 값을 Y로 업데이트함))
@@ -89,6 +120,37 @@ public class PostService {
         }
     }
 
+    @Data
+    @AllArgsConstructor
+    public class PostListDto {
+        private Long id;
+        private String afterDate;
+        private String img;
+        private String title;
+        private int price;
+        private String content;
+        private String Region;
+        private TradeStatus status;
+    }
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class PostDto {
+        private Long id;
+        private String creatorId;
+        private String profileImg;
+        private String creatorName;
+        private String afterDate;
+        private List<PostsPhoto> photoList;
+        private String title;
+        private int price;
+        private String content;
+        private String Region;
+        private TradeStatus status;
+        private boolean isOwner;
+        private List<PostTag> tags;
+
     //Post를 등록할 때 중간에 Tag 저장하는 로직
     @Transactional
     public void savePostTags(Long postId, Long tagId) {
@@ -97,6 +159,4 @@ public class PostService {
         PostTag postTag = PostTag.builder().post(findPost).tag(tag).build();
         postTagRepository.save(postTag);
     }
-
 }
-

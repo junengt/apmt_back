@@ -1,6 +1,6 @@
 package click.applemt.apmt.service;
 
-import click.applemt.apmt.controller.userController.PointDto;
+import click.applemt.apmt.controller.profile.PointDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.point.AccountHistory;
 import click.applemt.apmt.repository.userRepository.AccountHistoryRepository;

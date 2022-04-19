@@ -17,6 +17,6 @@ public class Tag {
     @Column(name = "tag_name")
     private String name;
 
-    @Column(name = "tag_seq")
-    private int seq; //태그 정렬 순서로 시퀀스 값
+//    @Column(name = "tag_seq")
+//    private int seq; //태그 정렬 순서로 시퀀스 값
 }
