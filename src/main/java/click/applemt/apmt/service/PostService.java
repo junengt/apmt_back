@@ -55,6 +55,7 @@ public class PostService {
     public Long savePost(PostDto postDto, AuthUser authUser) {
         User findUser = userRepository.findById(authUser.getUid()).orElseThrow();
         Post post = new Post();
+        post.setUser(findUser);
         post.setTitle(postDto.getTitle());
         post.setPrice(postDto.getPrice());
         post.setContent(postDto.getContent());
