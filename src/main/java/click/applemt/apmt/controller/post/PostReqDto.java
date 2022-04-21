@@ -9,9 +9,9 @@ import java.util.List;
 
 @Data
 public class PostReqDto {
-    private final String title;
-    private final List<String> tags;
-    private Long price;
-    private String content;
-    private String town;
+    private  String title;
+    private  List<String> tags;
+    private  Long price;
+    private  String content;
+    private  String town;
 }

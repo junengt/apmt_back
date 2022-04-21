@@ -45,8 +45,8 @@ public class PostService {
     private final FirebaseInit firebaseInit;
 
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
-    public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond, Pageable pageable) {
-        return postRepository.findPostsBySearch(searchCond, pageable).stream()
+    public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond) {
+        return postRepository.findPostsBySearch(searchCond).stream()
                 .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
                 .collect(Collectors.toList());
     }
@@ -77,6 +77,7 @@ public class PostService {
     }
 
     //Post삭제 (실제로는 delete가 아니라 update(삭제 플래그 값을 Y로 업데이트함))
+    @Transactional
     public Long deleteByPostId(Long postId) {
         postRepository.updatePostDelete(postId);
         return postId;

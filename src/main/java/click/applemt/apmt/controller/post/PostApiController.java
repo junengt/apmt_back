@@ -29,8 +29,8 @@ public class PostApiController {
 
     //등록된 중고거래 글 조회 API
     @GetMapping("/items")
-    public Result getPostList(@RequestParam(defaultValue = "", required = false) PostSearchCondition searchCond, Pageable pageable) {
-        return new Result(postService.findAllPostAndSearchKeyword(searchCond, pageable));
+    public Result getPostList(@RequestParam(defaultValue = "", required = false) PostSearchCondition searchCond) {
+        return new Result(postService.findAllPostAndSearchKeyword(searchCond));
     }
 
     @DeleteMapping("/items/{id}")
