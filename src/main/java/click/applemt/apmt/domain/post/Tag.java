@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -17,6 +19,6 @@ public class Tag {
     @Column(name = "tag_name")
     private String name;
 
-//    @Column(name = "tag_seq")
-//    private int seq; //태그 정렬 순서로 시퀀스 값
+    @ManyToMany(mappedBy = "tags")
+    private List<Post> posts = new ArrayList<>();
 }

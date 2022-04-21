@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -43,9 +45,18 @@ public class InitDB {
             Tag tag = new Tag();
             tag.setName("Mac");
             em.persist(tag);
+            Tag tag1 = new Tag();
+            tag1.setName("MacBook Air");
+            em.persist(tag1);
+
+            List<Tag> tags = new ArrayList<>();
+            tags.add(tag);
+            tags.add(tag1);
+
+
 
             Post post = new Post();
-
+            post.setTags(tags);
             post.setUser(user);
             post.setTitle("[맥북프로]Macbook pro 13' 2015 early retina\n");
             post.setContent("[Macbook Pro 13' 2015 early retina 256GB]\n" +
@@ -60,15 +71,11 @@ public class InitDB {
                     "제품 특성상 교환이나 환불은 어려우며 너무 민감하신 분들은 거래가 어려울거 같습니다. 감사합니다.");
             post.setStatus(TradeStatus.ING);
             post.setTown("경기도 광명시 소하동");
-            post.setPrice(10000);
+            post.setPrice(10000L);
             em.persist(post);
 
-            PostTag pt = new PostTag();
 
-            pt.setPost(post);
-            pt.setTag(tag);
 
-            em.persist(pt);
 
             PostsPhoto photo = new PostsPhoto();
 

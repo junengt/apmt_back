@@ -69,9 +69,9 @@ public class UserService implements UserDetailsService {
         AccountHistory history = new AccountHistory().pointDtoToAccountHistory(data,findUser);
         historyRepository.save(history);
         if(data.isChargeOrRefund()){
-            findUser.plusAccount(data.getPoint());
+            findUser.plusAccount((long) data.getPoint());
         }else{
-            findUser.minusAccount(data.getPoint());
+            findUser.minusAccount((long) data.getPoint());
         }
         return findUser;
 
