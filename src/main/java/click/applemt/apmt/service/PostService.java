@@ -1,9 +1,15 @@
 package click.applemt.apmt.service;
 
 import click.applemt.apmt.config.FirebaseInit;
+import click.applemt.apmt.controller.post.PostReqDto;
+import click.applemt.apmt.controller.post.PostSearchCondition;
+import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
+import click.applemt.apmt.repository.postRepository.TagRepository;
+import click.applemt.apmt.repository.userRepository.UserRepository;
+import click.applemt.apmt.security.AuthUser;
 import click.applemt.apmt.util.Time;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -23,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,19 +77,23 @@ public class PostService {
     }
 
     //Post삭제 (실제로는 delete가 아니라 update(삭제 플래그 값을 Y로 업데이트함))
-    public void deleteByPostId(Long postId) {
+    public Long deleteByPostId(Long postId) {
         postRepository.updatePostDelete(postId);
+        return postId;
     }
 
     //Post를 등록하는 로직
     @Transactional
-    public Long savePost(PostDto postDto, AuthUser authUser) {
+    public Long savePost(PostReqDto postReqDto, AuthUser authUser) {
         User findUser = userRepository.findById(authUser.getUid()).orElseThrow();
         Post post = new Post();
         post.setUser(findUser);
-        post.setTitle(postDto.getTitle());
-        post.setPrice(postDto.getPrice());
-        post.setContent(postDto.getContent());
+        post.setTown(postReqDto.getTown());
+        post.setTitle(postReqDto.getTitle());
+        post.setPrice(postReqDto.getPrice());
+        post.setContent(postReqDto.getContent());
+        List<Tag> tags = tagRepository.findByName(postReqDto.getTags());
+        post.setTags(tags);
         post.setStatus(TradeStatus.ING);
         postRepository.save(post);
         return post.getId();
@@ -144,19 +155,5 @@ public class PostService {
         private TradeStatus status;
         private boolean isOwner;
         private List<String> tags;
-    }
-
-    //Post를 등록할 때 중간에 Tag 저장하는 로직
-    @Transactional
-    public void savePostTags(Long postId, Long tagId) {
-        Post findPost = postRepository.findById(postId).orElseThrow();
-        Tag tag = tagRepository.findById(tagId).orElseThrow();
-        PostTag postTag = PostTag.builder().post(findPost).tag(tag).build();
-        postTagRepository.save(postTag);
-    }
-
-    @Data
-    public class PostTagDto {
-        private List<Tag> tags = new ArrayList<>();
     }
 }

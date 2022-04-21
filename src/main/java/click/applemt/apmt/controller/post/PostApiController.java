@@ -10,8 +10,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -34,16 +38,14 @@ public class PostApiController {
         postService.deleteByPostId(id);
     }
 
-//    @PostMapping("/posts")
-//    public void savePost(@AuthenticationPrincipal AuthUser authUser,
-//                         @RequestPart PostDto postDto,
-//                         @RequestPart PostTagDto postTagDto,
-//                         @RequestPart(name = "file", required = false) List<MultipartFile> files,) {
-//        Long postId = postService.savePost(postDto,authUser);
-//        postService.savePostPhotos(postId, files);
-//        postService.savePostTags(postId,);
-//
-//    }
+    @PostMapping("/items")
+    public String savePost(@AuthenticationPrincipal AuthUser authUser,
+                         @RequestPart PostReqDto postReqDto,
+                         @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+        Long postId = postService.savePost(postReqDto, authUser);
+        postService.savePostPhotos(postId, files);
+        return "등록됨";
+    }
 
     @GetMapping("/items/{id}")
     public Result getPost(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false, defaultValue = "") String auth) throws FirebaseAuthException {

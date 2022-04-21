@@ -2,6 +2,7 @@ package click.applemt.apmt.repository.postRepository;
 
 import click.applemt.apmt.controller.post.PostSearchCondition;
 import click.applemt.apmt.domain.post.Post;
+import click.applemt.apmt.security.AuthUser;
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
