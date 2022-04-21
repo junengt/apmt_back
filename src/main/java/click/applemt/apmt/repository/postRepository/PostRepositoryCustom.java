@@ -10,6 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface PostRepositoryCustom {
-    Page<Post> findPostsBySearch(PostSearchCondition searchCond, Pageable pageable);
+    List<Post> findPostsBySearch(PostSearchCondition searchCond);
     void updatePostDelete(@Param("postId") Long postId);
 }
