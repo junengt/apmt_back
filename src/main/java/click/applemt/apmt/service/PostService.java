@@ -1,16 +1,8 @@
 package click.applemt.apmt.service;
 
-import click.applemt.apmt.controller.post.PostSearchCondition;
-import click.applemt.apmt.domain.User;
-import click.applemt.apmt.domain.post.*;
-import click.applemt.apmt.repository.postRepository.*;
-import click.applemt.apmt.repository.userRepository.UserRepository;
-import click.applemt.apmt.security.AuthUser;
-import lombok.RequiredArgsConstructor;
 import click.applemt.apmt.config.FirebaseInit;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
-import click.applemt.apmt.repository.postRepository.PostTagRepository;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
 import click.applemt.apmt.util.Time;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,7 +35,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final PostsPhotoRepository postsPhotoRepository;
-    private final PostTagRepository postTagRepository;
     private final FirebaseInit firebaseInit;
 
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
@@ -65,7 +56,7 @@ public class PostService {
         postDto.setCreatorName(user.getDisplayName());
         postDto.setProfileImg(user.getPhotoUrl());
         postDto.setPhotoList(findPost.getPhotoList());
-        postDto.setTags(findPost.getPostTags());
+        postDto.setTags(findPost.getTags().stream().map(e -> e.getName()).toList());
         postDto.setTitle(findPost.getTitle());
         if (decodedToken != null)
             postDto.setOwner(decodedToken.getUid().equals(uid));
@@ -129,7 +120,7 @@ public class PostService {
         private String afterDate;
         private String img;
         private String title;
-        private int price;
+        private Long price;
         private String content;
         private String Region;
         private TradeStatus status;
@@ -147,12 +138,12 @@ public class PostService {
         private String afterDate;
         private List<PostsPhoto> photoList;
         private String title;
-        private int price;
+        private Long price;
         private String content;
         private String Region;
         private TradeStatus status;
         private boolean isOwner;
-        private List<PostTag> tags;
+        private List<String> tags;
     }
 
     //Post를 등록할 때 중간에 Tag 저장하는 로직
@@ -163,7 +154,7 @@ public class PostService {
         PostTag postTag = PostTag.builder().post(findPost).tag(tag).build();
         postTagRepository.save(postTag);
     }
-    
+
     @Data
     public class PostTagDto {
         private List<Tag> tags = new ArrayList<>();

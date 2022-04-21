@@ -42,8 +42,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override public void configure(WebSecurity web) throws Exception { // 인증 예외 URL설정
          web.ignoring()
-                 .antMatchers(HttpMethod.GET, "/items")
-                 .antMatchers(HttpMethod.GET,"/items/*");
+                 .antMatchers(HttpMethod.GET, "/api/items")
+                 .antMatchers(HttpMethod.GET,"/api/items/*");
     }
 
 }

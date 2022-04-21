@@ -1,5 +1,6 @@
 package click.applemt.apmt.controller.post;
 
+import click.applemt.apmt.security.AuthUser;
 import click.applemt.apmt.security.util.RequestUtil;
 import click.applemt.apmt.service.PostService;
 import com.google.firebase.auth.FirebaseAuth;
@@ -9,10 +10,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api")
 @CrossOrigin("*")
 @Slf4j
 @RequiredArgsConstructor

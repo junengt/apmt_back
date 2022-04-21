@@ -31,6 +31,4 @@ public class TradeHistory extends BaseEntity {
     private Long price;
 
 
-
-
 }

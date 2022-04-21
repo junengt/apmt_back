@@ -32,10 +32,10 @@ public class User {
         return this;
     }
 
-    public void plusAccount(int point){
+    public void plusAccount(Long point){
         this.account += point;
     }
-    public void minusAccount(int point){
+    public void minusAccount(Long point){
         this.account -= point;
     }
 }
