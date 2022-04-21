@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,15 +23,25 @@ public class PostApiController {
 
     //등록된 중고거래 글 조회 API
     @GetMapping("/items")
-    public Result getPostList(@RequestParam(defaultValue = "", required = false) String search) {
-        return new Result(postService.findAllPostAndSearchKeyword(search));
+    public Result getPostList(@RequestParam(defaultValue = "", required = false) PostSearchCondition searchCond, Pageable pageable) {
+        return new Result(postService.findAllPostAndSearchKeyword(searchCond, pageable));
     }
 
-    @PutMapping("/posts/{id}")
+    @DeleteMapping("/items/{id}")
     public void deletePost(@PathVariable Long id) {
         postService.deleteByPostId(id);
     }
 
+//    @PostMapping("/posts")
+//    public void savePost(@AuthenticationPrincipal AuthUser authUser,
+//                         @RequestPart PostDto postDto,
+//                         @RequestPart PostTagDto postTagDto,
+//                         @RequestPart(name = "file", required = false) List<MultipartFile> files,) {
+//        Long postId = postService.savePost(postDto,authUser);
+//        postService.savePostPhotos(postId, files);
+//        postService.savePostTags(postId,);
+//
+//    }
 
     @GetMapping("/items/{id}")
     public Result getPost(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false, defaultValue = "") String auth) throws FirebaseAuthException {

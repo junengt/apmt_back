@@ -1,7 +1,13 @@
 package click.applemt.apmt.repository.postRepository;
 
+import click.applemt.apmt.controller.post.PostSearchCondition;
 import click.applemt.apmt.domain.post.Post;
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -17,31 +23,28 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     }
 
     @Override
-    public List<Post> findAll() {
-
-        return queryFactory
+    public Page<Post> findPostsBySearch(PostSearchCondition searchCond, Pageable pageable) {
+        QueryResults<Post> results = queryFactory
                 .selectFrom(post)
-                .where(post.deleted.isFalse())
-                .fetch();
-    }
-
-    @Override
-    public List<Post> findPostsBySearch(String searchKeyword) {
-
-        return queryFactory
-                .selectFrom(post)
-                .where(post.title.contains(searchKeyword)
+                .where(post.title.contains(searchCond.getSearch())
                         .and(post.deleted.isFalse()))
-                .fetch();
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<Post> content = results.getResults();
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
     }
 
     @Override
     public void updatePostDelete(Long postId) {
-
         queryFactory
                 .update(post)
                 .set(post.deleted,true)
                 .where(post.id.eq(postId))
                 .execute();
     }
+
 }

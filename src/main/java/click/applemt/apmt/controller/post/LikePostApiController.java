@@ -1,4 +1,4 @@
-package click.applemt.apmt.controller.postController;
+package click.applemt.apmt.controller.post;
 
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.security.AuthUser;

@@ -1,7 +1,6 @@
 package click.applemt.apmt.service;
 
-import click.applemt.apmt.controller.postController.PostDto;
-import click.applemt.apmt.controller.postController.PostListDto;
+import click.applemt.apmt.controller.post.PostSearchCondition;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.*;
@@ -19,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.auth.UserRecord;
 import lombok.*;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,11 +45,12 @@ public class PostService {
     private final PostsPhotoRepository postsPhotoRepository;
     private final PostTagRepository postTagRepository;
     private final FirebaseInit firebaseInit;
+
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
-    public List<PostListDto> findAllPostAndSearchKeyword(String searchKeyword) {
-            return postRepository.findPostsBySearch(searchKeyword).stream()
-                    .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), p.getPhotoList().get(0).getPhotoPath() ,p.getTitle(), p.getPrice(), p.getContent(),p.getTown(),p.getStatus()))
-                    .collect(Collectors.toList());
+    public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond, Pageable pageable) {
+        return postRepository.findPostsBySearch(searchCond, pageable).stream()
+                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
+                .collect(Collectors.toList());
     }
 
     public PostDto findOne(Long postId, FirebaseToken decodedToken) throws FirebaseAuthException {
@@ -65,8 +67,8 @@ public class PostService {
         postDto.setPhotoList(findPost.getPhotoList());
         postDto.setTags(findPost.getPostTags());
         postDto.setTitle(findPost.getTitle());
-        if(decodedToken != null)
-        postDto.setOwner(decodedToken.getUid().equals(uid));
+        if (decodedToken != null)
+            postDto.setOwner(decodedToken.getUid().equals(uid));
         postDto.setStatus(findPost.getStatus());
         postDto.setId(findPost.getId());
         postDto.setRegion(findPost.getTown());
@@ -132,6 +134,7 @@ public class PostService {
         private String Region;
         private TradeStatus status;
     }
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -150,6 +153,7 @@ public class PostService {
         private TradeStatus status;
         private boolean isOwner;
         private List<PostTag> tags;
+    }
 
     //Post를 등록할 때 중간에 Tag 저장하는 로직
     @Transactional
@@ -158,5 +162,10 @@ public class PostService {
         Tag tag = tagRepository.findById(tagId).orElseThrow();
         PostTag postTag = PostTag.builder().post(findPost).tag(tag).build();
         postTagRepository.save(postTag);
+    }
+    
+    @Data
+    public class PostTagDto {
+        private List<Tag> tags = new ArrayList<>();
     }
 }
