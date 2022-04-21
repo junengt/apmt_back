@@ -1,6 +1,7 @@
 package click.applemt.apmt;
 
 import click.applemt.apmt.domain.User;
+import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
@@ -70,6 +71,10 @@ public class InitDB {
             user2.setUid("SnVFvv5WLMQQZD9OYYMovhaukaM2");
             em.persist(user2);
 
+            User user3 = new User();
+            user3.setUid("6ZQGTNxeyAd7bDWdz6fCEPzwn9v2");
+            em.persist(user3);
+
             for (JSONObject jsonObject : jsonObjects) {
                 User user = null;
                 if (idx % 2 == 0) {
@@ -118,6 +123,14 @@ public class InitDB {
                 photo.setPost(post);
                 photo.setPhotoPath(img_src);
                 em.persist(photo);
+
+                if (idx%3==0 ){
+                    TradeHistory history = new TradeHistory();
+                    history.setPost(post);
+                    history.setUser(user3);
+                    history.setPrice(post.getPrice());
+                    em.persist(history);
+                }
 
             }
         }

@@ -1,6 +1,8 @@
 package click.applemt.apmt.service;
 
 import click.applemt.apmt.config.FirebaseInit;
+import click.applemt.apmt.domain.User;
+import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
@@ -58,9 +60,10 @@ public class PostService {
     }
 
     public List<PostListDto> findUserBuyingList(String uid){
-        List<Post> postsByUser = postRepository.findPostsByBuying(uid);
+        List<TradeHistory> postsByUser = postRepository.findPostsByBuying(uid);
         List<PostListDto> buyingList = new ArrayList<>();
-        for (Post post : postsByUser) {
+        for (TradeHistory tradeHistory : postsByUser) {
+            Post post = tradeHistory.getPost(); //
             PostListDto postListDto = new PostListDto();
             postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
             postListDto.setContent(post.getContent());
