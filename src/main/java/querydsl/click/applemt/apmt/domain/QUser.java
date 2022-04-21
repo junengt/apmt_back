@@ -24,6 +24,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final ListPath<click.applemt.apmt.domain.post.Post, click.applemt.apmt.domain.post.QPost> posts = this.<click.applemt.apmt.domain.post.Post, click.applemt.apmt.domain.post.QPost>createList("posts", click.applemt.apmt.domain.post.Post.class, click.applemt.apmt.domain.post.QPost.class, PathInits.DIRECT2);
 
+    public final ListPath<click.applemt.apmt.domain.point.TradeHistory, click.applemt.apmt.domain.point.QTradeHistory> tradeHistories = this.<click.applemt.apmt.domain.point.TradeHistory, click.applemt.apmt.domain.point.QTradeHistory>createList("tradeHistories", click.applemt.apmt.domain.point.TradeHistory.class, click.applemt.apmt.domain.point.QTradeHistory.class, PathInits.DIRECT2);
+
     public final StringPath uid = createString("uid");
 
     public QUser(String variable) {

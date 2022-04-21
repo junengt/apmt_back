@@ -28,6 +28,17 @@ public class PostApiController {
     public Result getPostList(@RequestParam(defaultValue = "", required = false) String search) {
         return new Result(postService.findAllPostAndSearchKeyword(search));
     }
+    //고객이 등록한 판매중 조회 API
+    @GetMapping("/sale")
+    public Result getUserPostList(@AuthenticationPrincipal AuthUser authUser){
+        return new Result(postService.findUserPostSellingList(authUser.getUid()));
+    }
+
+    //고객이 구매한 리스트 조회 API
+    @GetMapping("/buy")
+    public Result getUserBuyList(@AuthenticationPrincipal AuthUser authUser){
+        return new Result(postService.findUserBuyingList(authUser.getUid()));
+    }
 
     @PutMapping("/posts/{id}")
     public void deletePost(@PathVariable Long id) {

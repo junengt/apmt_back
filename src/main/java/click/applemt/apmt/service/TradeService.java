@@ -29,7 +29,7 @@ public class TradeService {
 
         Post findPost = postRepository.findById(postId).get();
         User postUser = findPost.getUser();
-        User buyer = userRepository.findById(user.getUid()).get();
+        User buyer = userRepository.findByUid(user.getUid()).get();
 
         TradeHistory tradeHistory = new TradeHistory();
         Long price = findPost.getPrice();

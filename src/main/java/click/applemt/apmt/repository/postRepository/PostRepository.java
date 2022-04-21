@@ -21,4 +21,12 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Modifying
     @Query("UPDATE Post p SET p.deleted = true WHERE p.id = :postId")
     void updatePostDelete(@Param("postId") Long postId);
+
+    @Query("SELECT p from Post p join fetch p.user u WHERE p.deleted=false AND u.uid = :uid ")
+    List<Post> findPostsByUserSelling(String uid);
+
+    @Query("SELECT t from TradeHistory t join fetch t.user u WHERE u.uid = :uid")
+    List<Post> findPostsByBuying(String uid);
+
+
 }

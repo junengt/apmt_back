@@ -1,5 +1,6 @@
 package click.applemt.apmt.domain;
 
+import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.Post;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -21,6 +22,10 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY) //양방향 연관관계로 설계
     private List<Post> posts = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    private List<TradeHistory> tradeHistories = new ArrayList<>();
 
     @Column(name = "pay_account")
     private Long account;

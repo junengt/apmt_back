@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String uid) throws UsernameNotFoundException {
         //firebase 에서 가져온 token이 유효한지 확인 후 uid를 가져온다.
 
-        Optional<User> findUser = userRepository.findById(uid);
+        Optional<User> findUser = userRepository.findByUid(uid);
         //가져온 uid로 우리 DB에 등록된 user인지 확인한다.
 
         if(findUser.isPresent()){
@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
     }
     @Transactional
     public User pointUpdate(PointDto data, AuthUser authUser) {
-        User findUser = userRepository.findById(authUser.getUid()).get();
+        User findUser = userRepository.findByUid(authUser.getUid()).get();
         AccountHistory history = new AccountHistory().pointDtoToAccountHistory(data,findUser);
         historyRepository.save(history);
         if(data.isChargeOrRefund()){

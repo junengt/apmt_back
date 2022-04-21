@@ -1,6 +1,7 @@
 package click.applemt.apmt;
 
 import click.applemt.apmt.domain.User;
+import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
@@ -38,9 +39,10 @@ public class InitDB {
 
             User user = new User();
             user.setAccount(0l);
-            user.setUid("IhuBtJ1JcwZ1AKkV5D5r8cOOfVU2");
+            user.setUid("6ZQGTNxeyAd7bDWdz6fCEPzwn9v2");
 //            db설정이 create-drop인 경우에만 실행
 
+            TradeHistory history = new TradeHistory();
 
             Tag tag = new Tag();
             tag.setName("Mac");

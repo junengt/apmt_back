@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,43 @@ public class PostService {
                     .collect(Collectors.toList());
     }
 
+    public  List<PostListDto> findUserPostSellingList(String uid){
+
+        List<Post> postsByUser = postRepository.findPostsByUserSelling(uid);
+        List<PostListDto> sellingList = new ArrayList<>();
+        for (Post post : postsByUser) {
+            PostListDto postListDto = new PostListDto();
+            postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
+            postListDto.setContent(post.getContent());
+            postListDto.setId(post.getId());
+            postListDto.setPrice(post.getPrice());
+            postListDto.setRegion(post.getTown());
+            postListDto.setTitle(post.getTitle());
+            postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
+            postListDto.setStatus(post.getStatus());
+            sellingList.add(postListDto);
+        }
+        return sellingList;
+    }
+
+    public List<PostListDto> findUserBuyingList(String uid){
+        List<Post> postsByUser = postRepository.findPostsByBuying(uid);
+        List<PostListDto> buyingList = new ArrayList<>();
+        for (Post post : postsByUser) {
+            PostListDto postListDto = new PostListDto();
+            postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
+            postListDto.setContent(post.getContent());
+            postListDto.setId(post.getId());
+            postListDto.setPrice(post.getPrice());
+            postListDto.setRegion(post.getTown());
+            postListDto.setTitle(post.getTitle());
+            postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
+            postListDto.setStatus(post.getStatus());
+            buyingList.add(postListDto);
+        }
+        return buyingList;
+
+    }
     public PostDto findOne(Long postId, FirebaseToken decodedToken) throws FirebaseAuthException {
         Post findPost = postRepository.findById(postId).get();
         String uid = findPost.getUser().getUid();
@@ -93,6 +131,7 @@ public class PostService {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public class PostListDto {
         private Long id;
         private String afterDate;
