@@ -1,17 +1,23 @@
 package click.applemt.apmt;
 
 import click.applemt.apmt.domain.User;
-import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,68 +29,97 @@ public class InitDB {
     private final InitService initService;
 
     @PostConstruct
-    public void init(){
+    public void init() throws IOException, ParseException {
         initService.doInit();
     }
 
     @Component
     @Transactional
     @RequiredArgsConstructor
-    static class InitService{
+    static class InitService {
         private final EntityManager em;
         private final UserRepository userRepository;
         private final PostRepository postRepository;
+        private final ResourceLoader resourceLoader;
 
-        public void doInit(){
-
-            User user = new User();
-            user.setAccount(0l);
-            user.setUid("6ZQGTNxeyAd7bDWdz6fCEPzwn9v2");
-//            db설정이 create-drop인 경우에만 실행
-
-            TradeHistory history = new TradeHistory();
-
+        public void doInit() throws IOException, ParseException {
+            JSONParser parser = new JSONParser();
+            File file = resourceLoader.getResource("classpath:/static/carrot.json").getFile();
+            FileReader fileReader = new FileReader(file);
+            ArrayList<JSONObject> jsonObjects = (ArrayList<JSONObject>) parser.parse(fileReader);
+            // 통일성 있는 데이터는 한번만 persist 한다
             Tag tag = new Tag();
             tag.setName("Mac");
             em.persist(tag);
+
             Tag tag1 = new Tag();
-            tag1.setName("MacBook Air");
+            tag1.setName("MacBook Pro");
             em.persist(tag1);
 
             List<Tag> tags = new ArrayList<>();
             tags.add(tag);
             tags.add(tag1);
 
+            int idx = 0;
+
+            User user1 = new User();
+            user1.setUid("IhuBtJ1JcwZ1AKkV5D5r8cOOfVU2");
+            em.persist(user1);
+
+            User user2 = new User();
+            user2.setUid("SnVFvv5WLMQQZD9OYYMovhaukaM2");
+            em.persist(user2);
+
+            for (JSONObject jsonObject : jsonObjects) {
+                User user = null;
+                if (idx % 2 == 0) {
+                    // 짝수번째일때 강팀장님 ID에 데이터 추가
+                    user = userRepository.findByUid(user1.getUid()).get();
+                } else {
+                    // 홀수번째일때 이상무 ID에 데이터 추가
+                    user = userRepository.findByUid(user2.getUid()).get();
+                }
+                idx++;
 
 
-            Post post = new Post();
-            post.setTags(tags);
-            post.setUser(user);
-            post.setTitle("[맥북프로]Macbook pro 13' 2015 early retina\n");
-            post.setContent("[Macbook Pro 13' 2015 early retina 256GB]\n" +
-                    "\n" +
-                    "뒷판에 눌림 한곳 있고 모서리에 찍힘 여러군데 있습니다.\n" +
-                    "충전케이블이 사용감은 있지만 성능상 문제는 없으며 약한 부분은 검정케이블로 보강해뒀습니다. 풀박스 구성에서 연장선은 없고 그자리에 매직마우스2 화이트 채워서 드립니다.\n" +
-                    "\n" +
-                    "성능상 아무 하자 없고 최대 사이클(1000사이클)의 절반 사용한 상태 이며 베터리 최대 충전량도 4740mAh라 아직 90%의 베터리 효율을 보입니다.\n" +
-                    "\n" +
-                    "사과의 불들어 오는 마지막 모델이고 현재 포멧한 상태입니다.\n" +
-                    "\n" +
-                    "제품 특성상 교환이나 환불은 어려우며 너무 민감하신 분들은 거래가 어려울거 같습니다. 감사합니다.");
-            post.setStatus(TradeStatus.ING);
-            post.setTown("경기도 광명시 소하동");
-            post.setPrice(10000L);
-            em.persist(post);
+                String tagsJson = (String) jsonObject.get("tags");
+                String[] tagsSplit = tagsJson.split(",");
+
+                // db설정이 create-drop인 경우에만 실행
+
+                // tag 로직이 들어가야할 자리
 
 
+                // Post
+                Post post = new Post();
+                String title = (String) jsonObject.get("title");
+                String content = (String) jsonObject.get("content");
+                String region_name = (String) jsonObject.get("region_name");
+                // "n원" 형태의 문자열이기 때문에 Long 형으로 변환하였다.
+                String priceString = (String) jsonObject.get("price");
+                String priceReplace = priceString.replace(",", "").replace("원", "");
+                Long price;
+                try {
+                    price = Long.parseLong(priceReplace);
+                } catch (NumberFormatException e) {
+                    price = 0L;
+                }
+                post.setTags(tags);
+                post.setUser(user);
+                post.setTitle(title);
+                post.setContent(content);
+                post.setStatus(TradeStatus.ING);
+                post.setTown(region_name);
+                post.setPrice(price);
+                em.persist(post);
 
+                PostsPhoto photo = new PostsPhoto();
+                String img_src = (String) jsonObject.get("img_src");
+                photo.setPost(post);
+                photo.setPhotoPath(img_src);
+                em.persist(photo);
 
-            PostsPhoto photo = new PostsPhoto();
-
-            photo.setPost(post);
-            photo.setPhotoPath("https://dnvefa72aowie.cloudfront.net/origin/article/202203/825A4C9C5F813255EF061676B0274DA1B7F01BAAFFD51F97259DD9147317D820.jpg?q=82&s=300x300&t=crop");
-
-            em.persist(photo);
+            }
         }
 
     }
