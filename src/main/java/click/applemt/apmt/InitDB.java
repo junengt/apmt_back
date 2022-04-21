@@ -1,7 +1,10 @@
 package click.applemt.apmt;
 
 import click.applemt.apmt.domain.User;
-import click.applemt.apmt.domain.post.*;
+import click.applemt.apmt.domain.post.Post;
+import click.applemt.apmt.domain.post.PostsPhoto;
+import click.applemt.apmt.domain.post.Tag;
+import click.applemt.apmt.domain.post.TradeStatus;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -75,10 +78,10 @@ public class InitDB {
                 User user = null;
                 if (idx % 2 == 0) {
                     // 짝수번째일때 강팀장님 ID에 데이터 추가
-                    user = userRepository.findById(user1.getUid()).get();
+                    user = userRepository.findByUid(user1.getUid()).get();
                 } else {
                     // 홀수번째일때 이상무 ID에 데이터 추가
-                    user = userRepository.findById(user2.getUid()).get();
+                    user = userRepository.findByUid(user2.getUid()).get();
                 }
                 idx++;
 
