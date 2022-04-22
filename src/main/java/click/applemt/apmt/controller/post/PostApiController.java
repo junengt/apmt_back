@@ -40,6 +40,7 @@ public class PostApiController {
         return new Result(postService.findUserBuyingList(authUser.getUid()));
     }
 
+
     @PutMapping("/posts/{id}")
     public void deletePost(@PathVariable Long id) {
         postService.deleteByPostId(id);
@@ -55,12 +56,34 @@ public class PostApiController {
                 decodedToken = firebaseAuth.verifyIdToken(header);
             } catch (FirebaseAuthException | IllegalArgumentException e) {
                 log.info("token verify exception: " + e.getMessage());
-
             }
         }
         return new Result(postService.findOne(id,decodedToken));
     }
 
+
+
+    // 판매 글의 판매자의 판매 목록 조회 API
+
+    /**
+     * 판매글에서 판매자의 전체 판매 목록을 가져온다
+     * @param postId 판매글의 ID
+     * @return 판매자의 전체 판매 목록
+     */
+    @GetMapping("/items/{postId}/posts")
+    public Result getSellerPostList(@PathVariable Long postId) {
+        return new Result(postService.getSellerPostsByPostId(postId));
+    }
+
+
+/*
+        // 판매 글의 판매자의 리뷰들 조회 API
+        @GetMapping("/items/{id}/reviews")
+        public Result getSellerReviewList(@AuthenticationPrincipal AuthUser authUser) {
+
+        }
+
+*/
 
     @Data
     @AllArgsConstructor

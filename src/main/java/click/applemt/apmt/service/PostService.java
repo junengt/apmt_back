@@ -132,6 +132,22 @@ public class PostService {
         }
     }
 
+
+    /**
+     * postId에 해당하는 판매글을 가져온다
+     * 판매글의 판매자 user ID를 가져온다
+     * 판매자 user Id에 해당하는 판매중인 판매글 리스트를 가져온다
+     *
+     * @param postId    판매글의 post ID
+     * @return  판매글의 판매자의 판매글 리스트
+     */
+    public List<Post> getSellerPostsByPostId(Long postId) {
+        // postId에 해당하는 판매글을 가져온다 -> 판매글의 판매자 user ID를 가져온다
+        String sellerUserId = postRepository.getUserIdByPostId(postId);
+        // 판매자 user ID에 해당하는 판매글 목록을 가져온다
+        return postRepository.findPostsByUserSelling(sellerUserId);
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
