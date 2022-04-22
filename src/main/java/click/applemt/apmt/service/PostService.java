@@ -74,8 +74,11 @@ public class PostService {
 
     //Post삭제 (실제로는 delete가 아니라 update(삭제 플래그 값을 Y로 업데이트함))
     @Transactional
-    public Long deleteByPostId(Long postId) {
-        postRepository.updatePostDelete(postId);
+    public Long deleteByPostId(Long postId, AuthUser authUser) {
+        Post findPost = postRepository.findById(postId).get();
+        if (findPost.getUser().getUid().equals(authUser.getUid())) {
+            postRepository.updatePostDelete(postId);
+        }
         return postId;
     }
 

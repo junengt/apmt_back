@@ -35,8 +35,9 @@ public class PostApiController {
 
     //중고거래 글 삭제 API(DELETE X, UPDATE O)
     @DeleteMapping("/items/{id}")
-    public void deletePost(@PathVariable Long id) {
-        postService.deleteByPostId(id);
+    public void deletePost(@PathVariable Long id,
+                           @AuthenticationPrincipal AuthUser authUser) {
+        postService.deleteByPostId(id, authUser);
     }
 
     //중고거래 글 등록 API
