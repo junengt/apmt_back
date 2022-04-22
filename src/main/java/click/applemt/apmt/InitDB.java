@@ -18,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,9 +46,8 @@ public class InitDB {
 
         public void doInit() throws IOException, ParseException {
             JSONParser parser = new JSONParser();
-            File file = resourceLoader.getResource("classpath:/static/carrot.json").getFile();
-            FileReader fileReader = new FileReader(file);
-            ArrayList<JSONObject> jsonObjects = (ArrayList<JSONObject>) parser.parse(fileReader);
+            InputStream file = resourceLoader.getResource("classpath:/static/carrot.json").getInputStream();
+            ArrayList<JSONObject> jsonObjects = (ArrayList<JSONObject>) parser.parse(new InputStreamReader(file));
             // 통일성 있는 데이터는 한번만 persist 한다
             Tag tag = new Tag();
             tag.setName("Mac");
@@ -67,11 +64,11 @@ public class InitDB {
             int idx = 0;
 
             User user1 = new User();
-            user1.setUid("IhuBtJ1JcwZ1AKkV5D5r8cOOfVU2");
+            user1.setUid("DtTKbg4JRdQtCgyuCLu9sSafo702");
             em.persist(user1);
 
             User user2 = new User();
-            user2.setUid("SnVFvv5WLMQQZD9OYYMovhaukaM2");
+            user2.setUid("kSuKt7fM0ufWRuzVUii8HyAG4by2");
             em.persist(user2);
 
             for (JSONObject jsonObject : jsonObjects) {
