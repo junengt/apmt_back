@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import static click.applemt.apmt.domain.post.QPost.*;
@@ -32,7 +34,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
 
     @Override
     public List<Post> findPostsBySearch(PostSearchCondition searchCond) {
-
         return queryFactory
                 .selectFrom(post)
                 .join(post.tags, tag)

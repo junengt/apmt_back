@@ -67,11 +67,11 @@ public class InitDB {
             int idx = 0;
 
             User user1 = new User();
-            user1.setUid("IhuBtJ1JcwZ1AKkV5D5r8cOOfVU2");
+            user1.setUid("DtTKbg4JRdQtCgyuCLu9sSafo702");
             em.persist(user1);
 
             User user2 = new User();
-            user2.setUid("SnVFvv5WLMQQZD9OYYMovhaukaM2");
+            user2.setUid("kSuKt7fM0ufWRuzVUii8HyAG4by2");
             em.persist(user2);
 
             for (JSONObject jsonObject : jsonObjects) {

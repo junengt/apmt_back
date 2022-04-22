@@ -33,11 +33,13 @@ public class PostApiController {
         return new Result(postService.findAllPostAndSearchKeyword(searchCond));
     }
 
+    //중고거래 글 삭제 API(DELETE X, UPDATE O)
     @DeleteMapping("/items/{id}")
     public void deletePost(@PathVariable Long id) {
         postService.deleteByPostId(id);
     }
 
+    //중고거래 글 등록 API
     @PostMapping("/items")
     public String savePost(@AuthenticationPrincipal AuthUser authUser,
                          @RequestPart PostReqDto postReqDto,
@@ -46,6 +48,9 @@ public class PostApiController {
         postService.savePostPhotos(postId, files);
         return "등록됨";
     }
+
+    //중고거래 글 수정 API
+    @PatchMapping("/items")
 
     @GetMapping("/items/{id}")
     public Result getPost(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false, defaultValue = "") String auth) throws FirebaseAuthException {
