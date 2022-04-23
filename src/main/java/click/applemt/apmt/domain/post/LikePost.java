@@ -24,4 +24,9 @@ public class LikePost {
     @ManyToOne(fetch = LAZY) //단방향 연관관계 설계
     @JoinColumn(name = "posts_id")
     private Post post;
+
+    public LikePost(User user, Post post) {
+        this.user = user;
+        this.post = post;
+    }
 }

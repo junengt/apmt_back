@@ -3,7 +3,6 @@ package click.applemt.apmt.domain.post;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.common.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

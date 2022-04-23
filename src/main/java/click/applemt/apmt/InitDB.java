@@ -27,6 +27,7 @@ public class InitDB {
 
     private final InitService initService;
 
+
     @PostConstruct
     public void init() throws IOException, ParseException {
         initService.doInit();
@@ -58,6 +59,34 @@ public class InitDB {
             tags.add(tag);
             tags.add(tag1);
 
+            //Test..
+            Tag tag2 = new Tag();
+            tag2.setName("AirPod");
+            em.persist(tag2);
+            tags.add(tag2);
+
+            User usernew = new User();
+            usernew.setUid("KCIx9X9LVAMhggdTyGJh8Zqca1e2");
+            em.persist(usernew);
+
+            Post postnew = new Post();
+            postnew.setTags(tags);
+            postnew.setUser(usernew);
+            postnew.setTitle("에어팟 팔아요");
+            postnew.setContent("에어팟 판다구요");
+            postnew.setStatus(TradeStatus.ING);
+            postnew.setTown("서울시 구로구 구로동");
+            postnew.setPrice(10000l);
+            em.persist(postnew);
+
+            PostsPhoto photo2 = new PostsPhoto();
+            String img_src2 = "에어팟이미지";
+            photo2.setPost(postnew);
+            photo2.setPhotoPath(img_src2);
+            em.persist(photo2);
+
+            //Test!!
+
             int idx = 0;
 
             User user1 = new User();
@@ -76,10 +105,10 @@ public class InitDB {
                 User user = null;
                 if (idx % 2 == 0) {
                     // 짝수번째일때 강팀장님 ID에 데이터 추가
-                    user = userRepository.findByUid(user1.getUid()).get();
+                    user = userRepository.findById(user1.getUid()).get();
                 } else {
                     // 홀수번째일때 이상무 ID에 데이터 추가
-                    user = userRepository.findByUid(user2.getUid()).get();
+                    user = userRepository.findById(user2.getUid()).get();
                 }
                 idx++;
 
