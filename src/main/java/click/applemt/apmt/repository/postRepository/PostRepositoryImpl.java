@@ -36,11 +36,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     public List<Post> findPostsBySearch(PostSearchCondition searchCond) {
         return queryFactory
                 .selectFrom(post)
-                .join(post.tags, tag)
                 .where(post.title.contains(searchCond.getSearch())
                         .and(post.deleted.isFalse())
-                        .and(post.status.in(TradeStatus.ING,TradeStatus.END))
-                        .and(tag.name.in(searchCond.getTags())))
+                        .and(post.status.in(TradeStatus.ING,TradeStatus.END)))
                 .fetch();
     }
 

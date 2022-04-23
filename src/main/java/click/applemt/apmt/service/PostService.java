@@ -3,6 +3,7 @@ package click.applemt.apmt.service;
 import click.applemt.apmt.config.FirebaseInit;
 import click.applemt.apmt.controller.post.PostReqDto;
 import click.applemt.apmt.controller.post.PostSearchCondition;
+import click.applemt.apmt.controller.post.PostUpdateReqDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
@@ -107,6 +108,10 @@ public class PostService {
         }
         Post findPost = postRepository.findById(postId).orElseThrow();
         //.get 말고 orElseThrow로 에러 처리
+        //Post를 수정할 때 이미지가 비어있지 않으면 레파지토리에서 삭제하고 아래 포문에서 다시 추가
+        if (!findPost.getPhotoList().isEmpty()) {
+            postsPhotoRepository.deleteByPostId(postId);
+        }
         for (MultipartFile file : files) {
             //하나의 게시물을 참조하는 이미지 하나 생성 (루프 돌면서 복수의 이미지 넣기)
             String filePath = "C:\\Users\\kaas1\\Downloads\\" + file.getOriginalFilename();
@@ -122,6 +127,23 @@ public class PostService {
             //파일 저장 끝
             postsPhotoRepository.save(postsPhoto);
         }
+    }
+
+    //Post 수정하는 로직
+    @Transactional
+    public Long updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, AuthUser authUser) {
+        Post findPost = postRepository.findById(postId).get();
+        if (findPost.getUser().getUid().equals(authUser.getUid())) {
+            findPost.setTown(postUpdateReqDto.getTown());
+            findPost.setTitle(postUpdateReqDto.getTitle());
+            findPost.setPrice(postUpdateReqDto.getPrice());
+            findPost.setContent(postUpdateReqDto.getContent());
+            List<Tag> tags = tagRepository.findByName(postUpdateReqDto.getTags());
+            findPost.setTags(tags);
+            findPost.setStatus(TradeStatus.ING);
+            postRepository.save(findPost);
+        }
+        return findPost.getId();
     }
 
     @Data

@@ -35,9 +35,11 @@ public class PostApiController {
 
     //중고거래 글 삭제 API(DELETE X, UPDATE O)
     @DeleteMapping("/items/{id}")
-    public void deletePost(@PathVariable Long id,
+    public String deletePost(@PathVariable("id") Long postId,
                            @AuthenticationPrincipal AuthUser authUser) {
-        postService.deleteByPostId(id, authUser);
+        postService.deleteByPostId(postId, authUser);
+        return "삭제됨";
+        //인증 정보가 올바르지 않아도 삭제됨으로 표시되나 조회 쿼리만 나가고 삭제 플래그 업데이트 쿼리가 나가진 않음 에러처리 해야함
     }
 
     //중고거래 글 등록 API
@@ -46,12 +48,21 @@ public class PostApiController {
                          @RequestPart PostReqDto postReqDto,
                          @RequestPart(name = "file", required = false) List<MultipartFile> files) {
         Long postId = postService.savePost(postReqDto, authUser);
+
         postService.savePostPhotos(postId, files);
         return "등록됨";
     }
 
     //중고거래 글 수정 API
-    @PatchMapping("/items")
+    @PutMapping("/items/{id}")
+    public String updatePost(@AuthenticationPrincipal AuthUser authUser,
+                             @PathVariable("id") Long postId,
+                             @RequestPart PostUpdateReqDto postUpdateReqDto,
+                             @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+        Long updatePostId = postService.updatePost(postId, postUpdateReqDto, authUser);
+        postService.savePostPhotos(updatePostId,files);
+        return "수정됨";
+    }
 
     @GetMapping("/items/{id}")
     public Result getPost(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false, defaultValue = "") String auth) throws FirebaseAuthException {
