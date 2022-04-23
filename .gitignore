@@ -37,3 +37,4 @@ out/
 .vscode/
 testdb.lock.db
 *.db
+testdb.lock.db
