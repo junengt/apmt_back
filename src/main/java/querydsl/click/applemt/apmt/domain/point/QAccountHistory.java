@@ -24,6 +24,8 @@ public class QAccountHistory extends EntityPathBase<AccountHistory> {
 
     public final click.applemt.apmt.domain.common.QBaseEntity _super = new click.applemt.apmt.domain.common.QBaseEntity(this);
 
+    public final StringPath content = createString("content");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdTime = _super.createdTime;
 

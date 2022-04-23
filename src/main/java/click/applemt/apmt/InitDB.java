@@ -64,11 +64,11 @@ public class InitDB {
             int idx = 0;
 
             User user1 = new User();
-            user1.setUid("DtTKbg4JRdQtCgyuCLu9sSafo702");
+            user1.setUid("DtTKbg4JRdQtCgyuCLu9sSafo702"); // 혜영
             em.persist(user1);
 
             User user2 = new User();
-            user2.setUid("kSuKt7fM0ufWRuzVUii8HyAG4by2");
+            user2.setUid("kSuKt7fM0ufWRuzVUii8HyAG4by2"); // 창환
             em.persist(user2);
 
             for (JSONObject jsonObject : jsonObjects) {
