@@ -1,10 +1,8 @@
 package click.applemt.apmt;
 
 import click.applemt.apmt.domain.User;
-import click.applemt.apmt.domain.post.Post;
-import click.applemt.apmt.domain.post.PostsPhoto;
-import click.applemt.apmt.domain.post.Tag;
-import click.applemt.apmt.domain.post.TradeStatus;
+import click.applemt.apmt.domain.point.TradeHistory;
+import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +26,6 @@ import java.util.List;
 public class InitDB {
 
     private final InitService initService;
-
 
     @PostConstruct
     public void init() throws IOException, ParseException {
@@ -70,6 +67,10 @@ public class InitDB {
             User user2 = new User();
             user2.setUid("kSuKt7fM0ufWRuzVUii8HyAG4by2"); // 창환
             em.persist(user2);
+
+            User user3 = new User();
+            user3.setUid("BAkPsvdFqyLclJ1SaP7sn6MPHcE2");
+            em.persist(user3);
 
             for (JSONObject jsonObject : jsonObjects) {
                 User user = null;
@@ -119,6 +120,19 @@ public class InitDB {
                 photo.setPost(post);
                 photo.setPhotoPath(img_src);
                 em.persist(photo);
+
+                if (idx % 3==0 ){
+                    TradeHistory history = new TradeHistory();
+                    LikePost likePost = new LikePost();
+                    likePost.setPost(post);
+                    likePost.setUser(user3);
+                    likePost.setId(likePost.getId());
+                    history.setPost(post);
+                    history.setUser(user3);
+                    history.setPrice(post.getPrice());
+                    em.persist(history);
+                    em.persist(likePost);
+                }
 
             }
         }

@@ -1,6 +1,8 @@
 package click.applemt.apmt.service;
 
 import click.applemt.apmt.config.FirebaseInit;
+import click.applemt.apmt.domain.User;
+import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
@@ -20,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,62 @@ public class PostService {
                     .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), p.getPhotoList().get(0).getPhotoPath() ,p.getTitle(), p.getPrice(), p.getContent(),p.getTown(),p.getStatus()))
                     .collect(Collectors.toList());
     }
+
+    public  List<PostListDto> findUserPostSellingList(String uid){
+
+        List<Post> postsByUser = postRepository.findPostsByUserSelling(uid);
+        List<PostListDto> sellingList = new ArrayList<>();
+        for (Post post : postsByUser) {
+            PostListDto postListDto = new PostListDto();
+            postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
+            postListDto.setContent(post.getContent());
+            postListDto.setId(post.getId());
+            postListDto.setPrice(post.getPrice());
+            postListDto.setRegion(post.getTown());
+            postListDto.setTitle(post.getTitle());
+            postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
+            postListDto.setStatus(post.getStatus());
+            sellingList.add(postListDto);
+        }
+        return sellingList;
+    }
+
+    public List<PostListDto> findUserBuyingList(String uid){
+        List<TradeHistory> postsByUser = postRepository.findPostsByBuying(uid);
+        List<PostListDto> buyingList = new ArrayList<>();
+        for (TradeHistory tradeHistory : postsByUser) {
+            Post post = tradeHistory.getPost(); //
+            PostListDto postListDto = new PostListDto();
+            postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
+            postListDto.setContent(post.getContent());
+            postListDto.setId(post.getId());
+            postListDto.setPrice(post.getPrice());
+            postListDto.setRegion(post.getTown());
+            postListDto.setTitle(post.getTitle());
+            postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
+            postListDto.setStatus(post.getStatus());
+            buyingList.add(postListDto);
+        }
+        return buyingList;
+    }
+    public List<PostListDto> findUserLikePostList(String uid){
+        List<LikePost> likePosts = postRepository.findPostsByLike(uid);
+        List<PostListDto> likeList = new ArrayList<>();
+        for (LikePost likePost : likePosts) {
+            Post post = likePost.getPost();
+            PostListDto postListDto = new PostListDto();
+            postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
+            postListDto.setContent(post.getContent());
+            postListDto.setId(post.getId());
+            postListDto.setPrice(post.getPrice());
+            postListDto.setRegion(post.getTown());
+            postListDto.setTitle(post.getTitle());
+            postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
+            postListDto.setStatus(post.getStatus());
+            likeList.add(postListDto);
+            }
+        return likeList;
+        }
 
     public PostDto findOne(Long postId, FirebaseToken decodedToken) throws FirebaseAuthException {
         Post findPost = postRepository.findById(postId).get();
@@ -93,6 +152,7 @@ public class PostService {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public class PostListDto {
         private Long id;
         private String afterDate;
