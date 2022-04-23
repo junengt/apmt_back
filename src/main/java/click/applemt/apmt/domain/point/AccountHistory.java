@@ -29,6 +29,8 @@ public class AccountHistory extends BaseEntity {
     @JoinColumn(name="user_id")
     private User user;
 
+    private String content;
+
     @Enumerated(EnumType.STRING)
     private AccountDivision division;
 
@@ -37,6 +39,7 @@ public class AccountHistory extends BaseEntity {
     public AccountHistory pointDtoToAccountHistory(PointDto data, User user){
         this.user = user;
         this.price = Long.valueOf(data.getPoint());
+        this.content = "계좌거래";
         this.division = data.isChargeOrRefund() ? AccountDivision.DEPOSIT : AccountDivision.WITHDRAW;
         return this;
     }

@@ -23,7 +23,7 @@ public class User {
     private List<Post> posts = new ArrayList<>();
 
     @Column(name = "pay_account")
-    private Long account;
+    private Long account = 0l;
 
 
     public User newUser(String uid){

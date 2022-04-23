@@ -32,4 +32,7 @@ public class TradeController {
     static class PostIdRequest{
         private String postId;
     }
+
+
+
 }
