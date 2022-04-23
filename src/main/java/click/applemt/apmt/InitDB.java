@@ -72,7 +72,7 @@ public class InitDB {
             em.persist(user2);
 
             User user3 = new User();
-            user3.setUid("6ZQGTNxeyAd7bDWdz6fCEPzwn9v2");
+            user3.setUid("BAkPsvdFqyLclJ1SaP7sn6MPHcE2");
             em.persist(user3);
 
             for (JSONObject jsonObject : jsonObjects) {
@@ -124,12 +124,17 @@ public class InitDB {
                 photo.setPhotoPath(img_src);
                 em.persist(photo);
 
-                if (idx%3==0 ){
+                if (idx % 3==0 ){
                     TradeHistory history = new TradeHistory();
+                    LikePost likePost = new LikePost();
+                    likePost.setPost(post);
+                    likePost.setUser(user3);
+                    likePost.setId(likePost.getId());
                     history.setPost(post);
                     history.setUser(user3);
                     history.setPrice(post.getPrice());
                     em.persist(history);
+                    em.persist(likePost);
                 }
 
             }

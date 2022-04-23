@@ -1,6 +1,7 @@
 package click.applemt.apmt.repository.postRepository;
 
 import click.applemt.apmt.domain.point.TradeHistory;
+import click.applemt.apmt.domain.post.LikePost;
 import click.applemt.apmt.domain.post.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,5 +30,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("SELECT t from TradeHistory t join fetch t.user u WHERE u.uid = :uid")
     List<TradeHistory> findPostsByBuying(String uid);
 
+    @Query("SELECT p from LikePost p join fetch p.user u where u.uid = :uid")
+    List<LikePost> findPostsByLike(String uid);
 
 }

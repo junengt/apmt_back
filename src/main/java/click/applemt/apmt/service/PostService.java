@@ -76,8 +76,26 @@ public class PostService {
             buyingList.add(postListDto);
         }
         return buyingList;
-
     }
+    public List<PostListDto> findUserLikePostList(String uid){
+        List<LikePost> likePosts = postRepository.findPostsByLike(uid);
+        List<PostListDto> likeList = new ArrayList<>();
+        for (LikePost likePost : likePosts) {
+            Post post = likePost.getPost();
+            PostListDto postListDto = new PostListDto();
+            postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
+            postListDto.setContent(post.getContent());
+            postListDto.setId(post.getId());
+            postListDto.setPrice(post.getPrice());
+            postListDto.setRegion(post.getTown());
+            postListDto.setTitle(post.getTitle());
+            postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
+            postListDto.setStatus(post.getStatus());
+            likeList.add(postListDto);
+            }
+        return likeList;
+        }
+
     public PostDto findOne(Long postId, FirebaseToken decodedToken) throws FirebaseAuthException {
         Post findPost = postRepository.findById(postId).get();
         String uid = findPost.getUser().getUid();

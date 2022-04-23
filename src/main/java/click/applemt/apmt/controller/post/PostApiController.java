@@ -40,6 +40,12 @@ public class PostApiController {
         return new Result(postService.findUserBuyingList(authUser.getUid()));
     }
 
+    //고객이 찜한 리스트 조회 API
+    @GetMapping("/like")
+    public Result getUserLikeList(@AuthenticationPrincipal AuthUser authUser){
+        return new Result<>(postService.findUserLikePostList(authUser.getUid()));
+    }
+
     @PutMapping("/posts/{id}")
     public void deletePost(@PathVariable Long id) {
         postService.deleteByPostId(id);
