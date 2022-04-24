@@ -20,6 +20,7 @@ import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -29,6 +30,8 @@ import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.util.ObjectUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +47,7 @@ public class PostService {
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
     public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond) {
         return postRepository.findPostsBySearch(searchCond).stream()
-                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
+                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), isEmpty(p.getPhotoList()) ? null : p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
                 .collect(Collectors.toList());
     }
 
@@ -68,6 +71,7 @@ public class PostService {
         postDto.setId(findPost.getId());
         postDto.setRegion(findPost.getTown());
         postDto.setPrice(findPost.getPrice());
+        postDto.setView(findPost.getView());
 
         return postDto;
 
@@ -188,5 +192,6 @@ public class PostService {
         private TradeStatus status;
         private boolean isOwner;
         private List<String> tags;
+        private Integer view;
     }
 }

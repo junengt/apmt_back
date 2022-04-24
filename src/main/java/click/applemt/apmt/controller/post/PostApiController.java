@@ -29,7 +29,7 @@ public class PostApiController {
 
     //등록된 중고거래 글 조회 API
     @GetMapping("/items")
-    public Result getPostList(@RequestParam(defaultValue = "", required = false) PostSearchCondition searchCond) {
+    public Result getPostList(PostSearchCondition searchCond) {
         return new Result(postService.findAllPostAndSearchKeyword(searchCond));
     }
 

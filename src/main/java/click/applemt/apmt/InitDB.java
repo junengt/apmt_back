@@ -65,6 +65,7 @@ public class InitDB {
             tags.add(tag1);
 
             //Test..
+
             List<Tag> tags2 = new ArrayList<>();
 
             Tag tag2 = new Tag();
@@ -97,11 +98,11 @@ public class InitDB {
             postnew.setPrice(10000l);
             em.persist(postnew);
 
-            PostsPhoto photo2 = new PostsPhoto();
-            String img_src2 = "에어팟이미지";
-            photo2.setPost(postnew);
-            photo2.setPhotoPath(img_src2);
-            em.persist(photo2);
+//            PostsPhoto photo2 = new PostsPhoto();
+//            String img_src2 = "에어팟이미지";
+//            photo2.setPost(postnew);
+//            photo2.setPhotoPath(img_src2);
+//            em.persist(photo2);
 
             //Test!!
 

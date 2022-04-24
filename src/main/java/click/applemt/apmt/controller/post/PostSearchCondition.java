@@ -13,15 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 public class PostSearchCondition {
     private String search;
-    private TradeStatus status;
     private List<String> tags;
 
     public PostSearchCondition(String search) {
         this.search = search;
     }
 
-    public PostSearchCondition(String search, TradeStatus status) {
-        this.search = search;
-        this.status = status;
+    public PostSearchCondition(List<String> tags) {
+        this.tags = tags;
     }
 }
