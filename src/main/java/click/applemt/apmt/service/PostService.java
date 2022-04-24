@@ -102,13 +102,18 @@ public class PostService {
 
     //Post를 등록할 때 중간에 PostsPhoto 저장하는 로직
     @Transactional
-    public void savePostPhotos(Long postId, List<MultipartFile> files) {
+    public void savePostPhotos(Long postId, AuthUser authUser, List<MultipartFile> files) {
+        //입력된 이미지가 없으면 이 메서드는 실행하지 않음
         if (CollectionUtils.isEmpty(files)) {
             return;
         }
+        //입력된 이미지가 있다면 savePost메서드에서 저장된 게시물을 찾음
         Post findPost = postRepository.findById(postId).orElseThrow();
-        //.get 말고 orElseThrow로 에러 처리
-        //Post를 수정할 때 이미지가 비어있지 않으면 레파지토리에서 삭제하고 아래 포문에서 다시 추가
+        //사용자 인증 정보가 일치하지 않으면 이 메서드는 실행하지 않음
+        if (!findPost.getUser().getUid().equals(authUser.getUid())) {
+            return;
+        }
+        //Post를 등록 및 수정할 때 이미지가 이미 존재한다면 레파지토리에서 삭제함
         if (!findPost.getPhotoList().isEmpty()) {
             postsPhotoRepository.deleteByPostId(postId);
         }

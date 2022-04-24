@@ -49,7 +49,7 @@ public class PostApiController {
                          @RequestPart(name = "file", required = false) List<MultipartFile> files) {
         Long postId = postService.savePost(postReqDto, authUser);
 
-        postService.savePostPhotos(postId, files);
+        postService.savePostPhotos(postId, authUser, files);
         return "등록됨";
     }
 
@@ -60,7 +60,7 @@ public class PostApiController {
                              @RequestPart PostUpdateReqDto postUpdateReqDto,
                              @RequestPart(name = "file", required = false) List<MultipartFile> files) {
         Long updatePostId = postService.updatePost(postId, postUpdateReqDto, authUser);
-        postService.savePostPhotos(updatePostId,files);
+        postService.savePostPhotos(updatePostId, authUser, files);
         return "수정됨";
     }
 

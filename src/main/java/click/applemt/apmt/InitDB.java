@@ -65,10 +65,23 @@ public class InitDB {
             tags.add(tag1);
 
             //Test..
+            List<Tag> tags2 = new ArrayList<>();
+
             Tag tag2 = new Tag();
             tag2.setName("AirPod");
             em.persist(tag2);
-            tags.add(tag2);
+
+            Tag tag3 = new Tag();
+            tag3.setName("수정된AirPod");
+            em.persist(tag3);
+
+            Tag tag4 = new Tag();
+            tag4.setName("AirPodPro");
+            em.persist(tag4);
+
+            tags2.add(tag2);
+            tags2.add(tag3);
+            tags2.add(tag4);
 
             User usernew = new User();
             usernew.setUid("KCIx9X9LVAMhggdTyGJh8Zqca1e2");
