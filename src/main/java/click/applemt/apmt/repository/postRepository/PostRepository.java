@@ -2,6 +2,7 @@ package click.applemt.apmt.repository.postRepository;
 
 import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.Post;
+import click.applemt.apmt.domain.post.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -41,7 +42,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
      * @param uid   User의 uid
      * @return User의 판매글 리스트
      */
-    @Query("SELECT p from Post p join fetch p.user u WHERE p.deleted=false AND u.uid = :uid ")
+    @Query("SELECT p from Post p join fetch p.user u WHERE p.deleted=false AND u.uid = :uid")
     List<Post> findPostsByUserSelling(String uid);
 
     /**
@@ -53,8 +54,6 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     List<TradeHistory> findPostsByBuying(String uid);
 
 
-
-
     /**
      * postId에 해당하는 판매글에서 판매자의 user ID를 가져온다
      * @param postId    판매글의 ID
@@ -63,7 +62,8 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("SELECT p.user.uid FROM Post p WHERE p.deleted=false AND p.id = :postId")
     String getUserIdByPostId(Long postId);
 
-
-
+    // 구현중
+    @Query("SELECT r FROM Review r")
+    List<Review> findReviewsByUid(String uid);
 
 }

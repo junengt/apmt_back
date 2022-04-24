@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin("*")
@@ -40,7 +42,6 @@ public class PostApiController {
         return new Result(postService.findUserBuyingList(authUser.getUid()));
     }
 
-
     @PutMapping("/posts/{id}")
     public void deletePost(@PathVariable Long id) {
         postService.deleteByPostId(id);
@@ -63,27 +64,16 @@ public class PostApiController {
 
 
 
-    // 판매 글의 판매자의 판매 목록 조회 API
-
+    // 판매글에서 판매자의 판매 목록 조회 API
     /**
-     * 판매글에서 판매자의 전체 판매 목록을 가져온다
-     * @param postId 판매글의 ID
-     * @return 판매자의 전체 판매 목록
+     * 판매자의 정보 + 전체 판매 목록 + 리뷰 목록을 가져온다
+     * @param uid 판매자의 ID
+     * @return 판매자의 정보 + 전체 판매 목록 + 리뷰 목록
      */
-    @GetMapping("/items/{postId}/posts")
-    public Result getSellerPostList(@PathVariable Long postId) {
-        return new Result(postService.getSellerPostsByPostId(postId));
+    @GetMapping("/seller_profile/{uid}")
+    public Result getPostsSellerProfile(@PathVariable String uid) {
+        return new Result(postService.getSellerInfoByUserId(uid));
     }
-
-
-/*
-        // 판매 글의 판매자의 리뷰들 조회 API
-        @GetMapping("/items/{id}/reviews")
-        public Result getSellerReviewList(@AuthenticationPrincipal AuthUser authUser) {
-
-        }
-
-*/
 
     @Data
     @AllArgsConstructor

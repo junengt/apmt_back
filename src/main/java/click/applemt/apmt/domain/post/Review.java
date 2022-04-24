@@ -1,5 +1,6 @@
 package click.applemt.apmt.domain.post;
 
+import click.applemt.apmt.domain.common.BaseEntity;
 import click.applemt.apmt.domain.point.TradeHistory;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter @Setter
 @Table(name = "review")
-public class Review {
+public class Review extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")

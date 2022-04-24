@@ -6,6 +6,7 @@ import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
+import click.applemt.apmt.repository.tradeHistroyRepository.TradeHistoryRepository;
 import click.applemt.apmt.util.Time;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -32,6 +33,8 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final PostsPhotoRepository postsPhotoRepository;
+    private final TradeHistoryRepository tradeHistoryRepository;
+
     private final FirebaseInit firebaseInit;
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
     public List<PostListDto> findAllPostAndSearchKeyword(String searchKeyword) {
@@ -40,6 +43,11 @@ public class PostService {
                     .collect(Collectors.toList());
     }
 
+    /**
+     * uid에 해당하는 User의 판매 목록을 가져온다
+     * @param uid User의 userID
+     * @return PostListDto 판매목록 Dto
+     */
     public  List<PostListDto> findUserPostSellingList(String uid){
 
         List<Post> postsByUser = postRepository.findPostsByUserSelling(uid);
@@ -61,6 +69,7 @@ public class PostService {
 
     public List<PostListDto> findUserBuyingList(String uid){
         List<TradeHistory> postsByUser = postRepository.findPostsByBuying(uid);
+
         List<PostListDto> buyingList = new ArrayList<>();
         for (TradeHistory tradeHistory : postsByUser) {
             Post post = tradeHistory.getPost(); //
@@ -78,6 +87,44 @@ public class PostService {
         return buyingList;
 
     }
+
+    /**
+     * uid에 해당하는 User의 Review 리스트를 가져온다
+     * @param uid review 목록을 가져올 user의 id
+     * @return  user의 후기 내역
+     */
+    public List<ReviewListDto> findReviewsByUid(String uid) {
+        List<ReviewListDto> reviewList = new ArrayList<>();
+
+        List<TradeHistory> tradeHistories = tradeHistoryRepository.findTradeHistoriesByUid(uid);
+        for (TradeHistory tradeHistory : tradeHistories) {
+            System.out.println("tradeHistory = " + tradeHistory);
+            List<Review> reviews = tradeHistoryRepository.findReviewsByTradeHistoryId(tradeHistory.getId());
+            for (Review review : reviews) {
+                ReviewListDto reviewListDto = new ReviewListDto();
+                reviewListDto.setId(review.getId());
+                reviewListDto.setBuyer(tradeHistory.getUser());
+                reviewListDto.setContent(review.getContent());
+                reviewListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(review.getCreatedTime())));
+                reviewList.add(reviewListDto);
+            }
+        }
+        return reviewList;
+    }
+
+    /**
+     * uid에 해당하는 판매자의 uid, 전체 판매글 목록, 전체 후기 내역을 가져온다
+     * @param uid 판매자의 uid
+     * @return 판매자 정보(uid, 전체 판매글 목록, 전체 후기 내역)
+     */
+    public SellerInfoDto getSellerInfoByUserId(String uid) {
+        SellerInfoDto sellerInfo = new SellerInfoDto();
+        sellerInfo.setSellerUid(uid);
+        sellerInfo.setPosts(findUserPostSellingList(uid));
+        sellerInfo.setReviews(findReviewsByUid(uid));
+        return sellerInfo;
+    }
+
     public PostDto findOne(Long postId, FirebaseToken decodedToken) throws FirebaseAuthException {
         Post findPost = postRepository.findById(postId).get();
         String uid = findPost.getUser().getUid();
@@ -132,26 +179,28 @@ public class PostService {
         }
     }
 
-
-    /**
-     * postId에 해당하는 판매글을 가져온다
-     * 판매글의 판매자 user ID를 가져온다
-     * 판매자 user Id에 해당하는 판매중인 판매글 리스트를 가져온다
-     *
-     * @param postId    판매글의 post ID
-     * @return  판매글의 판매자의 판매글 리스트
-     */
-    public List<Post> getSellerPostsByPostId(Long postId) {
-        // postId에 해당하는 판매글을 가져온다 -> 판매글의 판매자 user ID를 가져온다
-        String sellerUserId = postRepository.getUserIdByPostId(postId);
-        // 판매자 user ID에 해당하는 판매글 목록을 가져온다
-        return postRepository.findPostsByUserSelling(sellerUserId);
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public class SellerInfoDto {    // 판매자 정보
+        private String sellerUid;
+        private List<ReviewListDto> reviews;
+        private List<PostListDto> posts;
+    }
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public class ReviewListDto {    // 후기 내역
+        private Long id;
+        private User buyer;
+        private String content;
+        private String afterDate;
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public class PostListDto {
+    public class PostListDto {      // 판매글 내역
         private Long id;
         private String afterDate;
         private String img;
