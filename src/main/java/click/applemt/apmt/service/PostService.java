@@ -73,6 +73,12 @@ public class PostService {
 
     }
 
+    //Post 조회수 증가 로직
+    @Transactional
+    public Long updateView(Long postId) {
+        return postRepository.updateView(postId);
+    }
+
     //Post삭제 (실제로는 delete가 아니라 update(삭제 플래그 값을 Y로 업데이트함))
     @Transactional
     public Long deleteByPostId(Long postId, AuthUser authUser) {

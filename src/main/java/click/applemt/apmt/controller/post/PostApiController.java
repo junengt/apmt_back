@@ -64,6 +64,7 @@ public class PostApiController {
         return "수정됨";
     }
 
+    //중고거래 글 상세 조회 API
     @GetMapping("/items/{id}")
     public Result getPost(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false, defaultValue = "") String auth) throws FirebaseAuthException {
         FirebaseToken decodedToken = null;
@@ -76,6 +77,7 @@ public class PostApiController {
 
             }
         }
+        postService.updateView(id);
         return new Result(postService.findOne(id,decodedToken));
     }
 

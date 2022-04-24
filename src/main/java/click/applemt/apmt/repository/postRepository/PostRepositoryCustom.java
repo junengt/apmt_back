@@ -12,4 +12,5 @@ import java.util.List;
 public interface PostRepositoryCustom {
     List<Post> findPostsBySearch(PostSearchCondition searchCond);
     void updatePostDelete(@Param("postId") Long postId);
+    Long updateView(Long postId);
 }

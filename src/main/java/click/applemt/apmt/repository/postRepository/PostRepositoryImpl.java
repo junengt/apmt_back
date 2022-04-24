@@ -51,4 +51,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .execute();
     }
 
+    @Override
+    public Long updateView(Long postId) {
+        return queryFactory
+                .update(post)
+                .set(post.view, post.view.add(1))
+                .where(post.id.eq(postId))
+                .execute();
+    }
+
 }
