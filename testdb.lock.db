@@ -1,6 +1,6 @@
 #FileLock
-#Sun Apr 24 16:01:20 KST 2022
-server=172.29.0.1\:62131
-hostName=DESKTOP-ES6G4SU.mshome.net
+#Sun Apr 24 02:00:08 KST 2022
+server=localhost\:58430
+hostName=localhost
 method=file
-id=1805a5ff1706c155c0f5c661383c768bacf50270777
+id=18055b8a7d1c06c1305d6e1e990c48838e5bbfb5d4d
