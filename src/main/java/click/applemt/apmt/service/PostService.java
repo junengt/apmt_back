@@ -4,6 +4,7 @@ import click.applemt.apmt.config.FirebaseInit;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.*;
+import click.applemt.apmt.repository.ReviewRepository;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
 import click.applemt.apmt.repository.tradeHistroyRepository.TradeHistoryRepository;
@@ -34,6 +35,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostsPhotoRepository postsPhotoRepository;
     private final TradeHistoryRepository tradeHistoryRepository;
+    private final ReviewRepository reviewRepository;
 
     private final FirebaseInit firebaseInit;
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
@@ -88,29 +90,6 @@ public class PostService {
 
     }
 
-    /**
-     * uid에 해당하는 User의 Review 리스트를 가져온다
-     * @param uid review 목록을 가져올 user의 id
-     * @return  user의 후기 내역
-     */
-    public List<ReviewListDto> findReviewsByUid(String uid) {
-        List<ReviewListDto> reviewList = new ArrayList<>();
-
-        List<TradeHistory> tradeHistories = tradeHistoryRepository.findTradeHistoriesByUid(uid);
-        for (TradeHistory tradeHistory : tradeHistories) {
-            System.out.println("tradeHistory = " + tradeHistory);
-            List<Review> reviews = tradeHistoryRepository.findReviewsByTradeHistoryId(tradeHistory.getId());
-            for (Review review : reviews) {
-                ReviewListDto reviewListDto = new ReviewListDto();
-                reviewListDto.setId(review.getId());
-                reviewListDto.setBuyer(tradeHistory.getUser());
-                reviewListDto.setContent(review.getContent());
-                reviewListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(review.getCreatedTime())));
-                reviewList.add(reviewListDto);
-            }
-        }
-        return reviewList;
-    }
 
     /**
      * uid에 해당하는 판매자의 uid, 전체 판매글 목록, 전체 후기 내역을 가져온다
@@ -119,9 +98,22 @@ public class PostService {
      */
     public SellerInfoDto getSellerInfoByUserId(String uid) {
         SellerInfoDto sellerInfo = new SellerInfoDto();
+        List<ReviewListDto> reviewListDtos = new ArrayList<>();
+        List<TradeHistory> tradeHistories = tradeHistoryRepository.getTradeHistoriesByUserUid(uid);
+        for (TradeHistory tradeHistory : tradeHistories) {
+            List<Review> reviews = reviewRepository.getReviewsByTradeHistoryId(tradeHistory.getId());
+            for (Review review : reviews) {
+                ReviewListDto reviewListDto = new ReviewListDto();
+                User user = tradeHistory.getUser();
+                reviewListDto.setBuyerUid(user.getUid());
+                reviewListDto.setContent(review.getContent());
+                reviewListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(review.getCreatedTime())));
+                reviewListDtos.add(reviewListDto);
+            }
+        }
         sellerInfo.setSellerUid(uid);
         sellerInfo.setPosts(findUserPostSellingList(uid));
-        sellerInfo.setReviews(findReviewsByUid(uid));
+        sellerInfo.setReviews(reviewListDtos);
         return sellerInfo;
     }
 
@@ -192,7 +184,7 @@ public class PostService {
     @NoArgsConstructor
     public class ReviewListDto {    // 후기 내역
         private Long id;
-        private User buyer;
+        private String buyerUid;
         private String content;
         private String afterDate;
     }
