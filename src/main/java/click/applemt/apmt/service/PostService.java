@@ -47,7 +47,7 @@ public class PostService {
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
     public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond) {
         return postRepository.findPostsBySearch(searchCond).stream()
-                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), isEmpty(p.getPhotoList()) ? null : p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
+                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), isEmpty(p.getPhotoList()) ? "https://firebasestorage.googleapis.com/v0/b/applemart-eeb42.appspot.com/o/6CIDfWMwFrQwJgt3FEy3zoGijU63%2F3b5c9b59-4b47-4ae2-85fe-2f4983a097c3?alt=media&token=e763815b-a33c-4656-82fb-b0113f6a6423" : p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
                 .collect(Collectors.toList());
     }
 
@@ -143,6 +143,7 @@ public class PostService {
             postsPhotoRepository.save(postsPhoto);
         }
     }
+
 
     //Post 수정하는 로직
     @Transactional
