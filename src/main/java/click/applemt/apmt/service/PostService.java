@@ -99,18 +99,17 @@ public class PostService {
     public SellerInfoDto getSellerInfoByUserId(String uid) {
         SellerInfoDto sellerInfo = new SellerInfoDto();
         List<ReviewListDto> reviewListDtos = new ArrayList<>();
-        List<TradeHistory> tradeHistories = tradeHistoryRepository.getTradeHistoriesByUserUid(uid);
-        for (TradeHistory tradeHistory : tradeHistories) {
-            List<Review> reviews = reviewRepository.getReviewsByTradeHistoryId(tradeHistory.getId());
-            for (Review review : reviews) {
-                ReviewListDto reviewListDto = new ReviewListDto();
-                User user = tradeHistory.getUser();
-                reviewListDto.setBuyerUid(user.getUid());
-                reviewListDto.setContent(review.getContent());
-                reviewListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(review.getCreatedTime())));
-                reviewListDtos.add(reviewListDto);
-            }
+        List<Review> reviews = reviewRepository.getReviewsBySellerUid(uid);
+        for (Review review : reviews) {
+            ReviewListDto reviewListDto = new ReviewListDto();
+            User user = review.getTradeHistory().getUser();
+            reviewListDto.setId(review.getId());
+            reviewListDto.setBuyerUid(user.getUid());
+            reviewListDto.setContent(review.getContent());
+            reviewListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(review.getCreatedTime())));
+            reviewListDtos.add(reviewListDto);
         }
+
         sellerInfo.setSellerUid(uid);
         sellerInfo.setPosts(findUserPostSellingList(uid));
         sellerInfo.setReviews(reviewListDtos);

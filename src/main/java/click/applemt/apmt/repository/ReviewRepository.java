@@ -14,4 +14,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
     @Query("SELECT r FROM Review r JOIN FETCH r.tradeHistory t WHERE t.id = :tradeHistoryId")
     List<Review> getReviewsByTradeHistoryId(Long tradeHistoryId);
 
+    @Query("SELECT r FROM Review r WHERE r.tradeHistory.post.user.uid =:uid")
+    List<Review> getReviewsBySellerUid(String uid);
+
+
 }
