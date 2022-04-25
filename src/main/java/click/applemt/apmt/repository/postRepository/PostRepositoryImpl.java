@@ -39,6 +39,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     public List<Post> findPostsBySearch(PostSearchCondition searchCond) {
         return queryFactory
                 .selectFrom(post)
+                .distinct()
                 .leftJoin(post.photoList, postsPhoto)
                 .fetchJoin()
                 .where(searchLike(searchCond.getSearch()),

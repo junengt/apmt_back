@@ -113,19 +113,23 @@ public class PostService {
     //Post를 등록할 때 중간에 PostsPhoto 저장하는 로직
     @Transactional
     public void savePostPhotos(Long postId, AuthUser authUser, List<MultipartFile> files) {
-        //입력된 이미지가 없으면 이 메서드는 실행하지 않음
-        if (CollectionUtils.isEmpty(files)) {
-            return;
-        }
         //입력된 이미지가 있다면 savePost메서드에서 저장된 게시물을 찾음
         Post findPost = postRepository.findById(postId).orElseThrow();
-        //사용자 인증 정보가 일치하지 않으면 이 메서드는 실행하지 않음
+        //사용자 인증 정보가 일치하지 않으면 이 메서드는 실행하지 않음 -> 에러처리로 바꾸든 없애든 해야함
         if (!findPost.getUser().getUid().equals(authUser.getUid())) {
             return;
         }
-        //Post를 등록 및 수정할 때 이미지가 이미 존재한다면 레파지토리에서 삭제함
+        //Post를 수정할 때 이미지가 이미 존재하고 이미지 저장을 하지 않는다면 레파지토리에서 삭제함
+        if (!findPost.getPhotoList().isEmpty() && CollectionUtils.isEmpty(files)) {
+            postsPhotoRepository.deleteByPostId(postId);
+        }
+        //Post를 수정할때 이미지가 이미 존재한다면 레파지토리에서 삭제함
         if (!findPost.getPhotoList().isEmpty()) {
             postsPhotoRepository.deleteByPostId(postId);
+        }
+        //Post를 등록할 때 이미지가 없으면 이 메서드는 실행하지 않음
+        if (CollectionUtils.isEmpty(files)) {
+            return;
         }
         for (MultipartFile file : files) {
             //하나의 게시물을 참조하는 이미지 하나 생성 (루프 돌면서 복수의 이미지 넣기)
