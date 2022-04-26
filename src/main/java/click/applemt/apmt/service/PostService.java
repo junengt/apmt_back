@@ -188,7 +188,7 @@ public class PostService {
     //Post 조회수 증가 로직
     @Transactional
     public Long updateView(Long postId) {
-        return postRepository.updateView(postId);
+        return postRepositoryCustom.updateView(postId);
     }
 
     //Post삭제 (실제로는 delete가 아니라 update(삭제 플래그 값을 Y로 업데이트함))
@@ -239,7 +239,7 @@ public class PostService {
             //하나의 게시물을 참조하는 이미지 하나 생성 (루프 돌면서 복수의 이미지 넣기)
             String filePath = "C:\\Users\\kaas1\\Downloads\\" + file.getOriginalFilename();
             //filePath 수정해야함
-            PostsPhoto postsPhoto = PostsPhoto.builder().photoPath(filePath).post(post).build();
+            PostsPhoto postsPhoto = PostsPhoto.builder().photoPath(filePath).post(findPost).build();
             //파일을 서버 저장소에 저장
             try {
                 Files.copy(file.getInputStream(), Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
