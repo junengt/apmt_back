@@ -9,6 +9,7 @@ import click.applemt.apmt.controller.post.PostUpdateReqDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
+import click.applemt.apmt.repository.postRepository.PostRepositoryCustom;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
 import click.applemt.apmt.repository.postRepository.TagRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
@@ -40,12 +41,13 @@ public class PostService {
 
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
+    private final PostRepositoryCustom postRepositoryCustom;
     private final UserRepository userRepository;
     private final PostsPhotoRepository postsPhotoRepository;
     private final FirebaseInit firebaseInit;
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
     public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond) {
-        return postRepository.findPostsBySearch(searchCond).stream()
+        return postRepositoryCustom.findPostsBySearch(searchCond).stream()
                 .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
                 .collect(Collectors.toList());
     }
@@ -231,6 +233,10 @@ public class PostService {
         private String content;
         private String Region;
         private TradeStatus status;
+
+        public PostListDto() {
+
+        }
     }
     @Getter
     @Setter

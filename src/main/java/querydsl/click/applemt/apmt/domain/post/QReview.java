@@ -22,11 +22,21 @@ public class QReview extends EntityPathBase<Review> {
 
     public static final QReview review = new QReview("review");
 
+    public final click.applemt.apmt.domain.common.QBaseEntity _super = new click.applemt.apmt.domain.common.QBaseEntity(this);
+
     public final StringPath content = createString("content");
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createdTime = _super.createdTime;
+
+    public final BooleanPath deleted = createBoolean("deleted");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final click.applemt.apmt.domain.point.QTradeHistory tradeHistory;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updatedTime = _super.updatedTime;
 
     public QReview(String variable) {
         this(Review.class, forVariable(variable), INITS);
