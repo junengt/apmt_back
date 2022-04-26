@@ -3,6 +3,7 @@ package click.applemt.apmt.service;
 import click.applemt.apmt.config.FirebaseInit;
 import click.applemt.apmt.controller.post.PostReqDto;
 import click.applemt.apmt.controller.post.PostSearchCondition;
+import click.applemt.apmt.controller.post.PostUpdateForm;
 import click.applemt.apmt.controller.post.PostUpdateReqDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.post.*;
@@ -29,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.*;
@@ -164,6 +166,24 @@ public class PostService {
             postRepository.save(findPost);
         }
         return findPost.getId();
+    }
+
+
+    //수정할 Post 불러오는 로직
+    @Transactional
+    public PostUpdateForm findPostForm(Long postId, AuthUser authUser) {
+        Post findPost = postRepository.findById(postId).get();
+        if (!findPost.getUser().getUid().equals(authUser.getUid())) {
+            return null;
+        }
+        PostUpdateForm form = new PostUpdateForm();
+        form.setPrice(findPost.getPrice());
+        form.setContent(findPost.getContent());
+        form.setTags(findPost.getTags().stream().map(e -> e.getName()).toList());
+        form.setTown(findPost.getTown());
+        form.setPostsPhotos(findPost.getPhotoList());
+        form.setTitle(findPost.getTitle());
+        return form;
     }
 
     @Data
