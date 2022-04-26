@@ -27,7 +27,7 @@ public class TradeHistory extends BaseEntity {
     @JsonIgnore
     @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL) //단방향 연관관계 설계
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user;      // 판매자
 
     @JsonIgnore
     @OneToMany(mappedBy = "tradeHistory",fetch = FetchType.LAZY )

@@ -42,7 +42,7 @@ public interface PostRepository extends JpaRepository<Post,Long> {
      * @param uid   User의 uid
      * @return User의 판매글 리스트
      */
-    @Query("SELECT p from Post p join fetch p.user u WHERE p.deleted=false AND u.uid = :uid ")
+    @Query("SELECT p from Post p join fetch p.user u WHERE p.deleted=false AND u.uid = :uid")
     List<Post> findPostsByUserSelling(String uid);
 
     /**
@@ -53,10 +53,6 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("SELECT t from TradeHistory t join fetch t.user u WHERE u.uid = :uid")
     List<TradeHistory> findPostsByBuying(String uid);
 
-    @Query("SELECT p from LikePost p join fetch p.user u where u.uid = :uid")
-    List<LikePost> findPostsByLike(String uid);
-
-
 
     /**
      * postId에 해당하는 판매글에서 판매자의 user ID를 가져온다
@@ -66,5 +62,8 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query("SELECT p.user.uid FROM Post p WHERE p.deleted=false AND p.id = :postId")
     String getUserIdByPostId(Long postId);
 
-    Long updateView(Long postId);
+    // 구현중
+    @Query("SELECT r FROM Review r")
+    List<Review> findReviewsByUid(String uid);
+
 }

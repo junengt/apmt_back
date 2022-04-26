@@ -104,27 +104,28 @@ public class InitDB {
             int idx = 0;
 
             User user1 = new User();
-            user1.setUid("DtTKbg4JRdQtCgyuCLu9sSafo702"); // 혜영
+            user1.setUid("DtTKbg4JRdQtCgyuCLu9sSafo702");
             em.persist(user1);
 
             User user2 = new User();
-            user2.setUid("kSuKt7fM0ufWRuzVUii8HyAG4by2"); // 창환
+            user2.setUid("kSuKt7fM0ufWRuzVUii8HyAG4by2");
             em.persist(user2);
 
             User user3 = new User();
-            user3.setUid("BAkPsvdFqyLclJ1SaP7sn6MPHcE2");
+            user3.setUid("QkWS3G5rC5dRG59yTWSuRjWBm0n2");
             em.persist(user3);
 
             for (JSONObject jsonObject : jsonObjects) {
+
                 User user = null;
                 if (idx % 2 == 0) {
                     // 짝수번째일때 강팀장님 ID에 데이터 추가
-                    user = userRepository.findById(user1.getUid()).get();
+                    user = userRepository.findByUid(user1.getUid()).get();
                 } else {
                     // 홀수번째일때 이상무 ID에 데이터 추가
-                    user = userRepository.findById(user2.getUid()).get();
+                    user = userRepository.findByUid(user2.getUid()).get();
                 }
-                idx++;
+
 
 
                 String tagsJson = (String) jsonObject.get("tags");
@@ -164,19 +165,21 @@ public class InitDB {
                 photo.setPhotoPath(img_src);
                 em.persist(photo);
 
-                if (idx % 3==0 ){
-                    TradeHistory history = new TradeHistory();
-                    LikePost likePost = new LikePost();
-                    likePost.setPost(post);
-                    likePost.setUser(user3);
-                    likePost.setId(likePost.getId());
-                    history.setPost(post);
-                    history.setUser(user3);
-                    history.setPrice(post.getPrice());
-                    em.persist(history);
-                    em.persist(likePost);
-                }
+                // 판매자 user1 또는 user2의 판매 상품을
+                // 구매자 user3이 모든 상품을 구매한다는 가정
 
+                TradeHistory history = new TradeHistory();
+                history.setPost(post);
+                history.setUser(user3);     // 구매자
+                history.setPrice(post.getPrice());
+                em.persist(history)
+                // 구매자 User3이 후기내역을 작성했다는 가정
+                Review review = new Review();
+                review.setTradeHistory(history);
+                review.setContent("판매자님이 친절해요. "+idx);
+                em.persist(review);
+
+                idx++;
             }
         }
 
