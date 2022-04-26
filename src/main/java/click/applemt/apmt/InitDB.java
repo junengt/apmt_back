@@ -172,7 +172,7 @@ public class InitDB {
                 history.setPost(post);
                 history.setUser(user3);     // 구매자
                 history.setPrice(post.getPrice());
-                em.persist(history)
+                em.persist(history);
                 // 구매자 User3이 후기내역을 작성했다는 가정
                 Review review = new Review();
                 review.setTradeHistory(history);
