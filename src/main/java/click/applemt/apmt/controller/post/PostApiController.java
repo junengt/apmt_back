@@ -29,7 +29,7 @@ public class PostApiController {
 
     //등록된 중고거래 글 조회 API
     @GetMapping("/items")
-    public Result getPostList(@RequestParam(defaultValue = "", required = false) PostSearchCondition searchCond) {
+    public Result getPostList(PostSearchCondition searchCond) {
         return new Result(postService.findAllPostAndSearchKeyword(searchCond));
     }
     //고객이 등록한 판매중 조회 API
@@ -66,7 +66,7 @@ public class PostApiController {
                          @RequestPart(name = "file", required = false) List<MultipartFile> files) {
         Long postId = postService.savePost(postReqDto, authUser);
 
-        postService.savePostPhotos(postId, files);
+        postService.savePostPhotos(postId, authUser, files);
         return "등록됨";
     }
 
@@ -77,10 +77,11 @@ public class PostApiController {
                              @RequestPart PostUpdateReqDto postUpdateReqDto,
                              @RequestPart(name = "file", required = false) List<MultipartFile> files) {
         Long updatePostId = postService.updatePost(postId, postUpdateReqDto, authUser);
-        postService.savePostPhotos(updatePostId,files);
+        postService.savePostPhotos(updatePostId, authUser, files);
         return "수정됨";
     }
 
+    //중고거래 글 상세 조회 API
     @GetMapping("/items/{id}")
     public Result getPost(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false, defaultValue = "") String auth) throws FirebaseAuthException {
         FirebaseToken decodedToken = null;
@@ -93,6 +94,7 @@ public class PostApiController {
 
             }
         }
+        postService.updateView(id);
         return new Result(postService.findOne(id,decodedToken));
     }
 

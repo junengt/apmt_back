@@ -23,6 +23,7 @@ import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,6 +34,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.util.ObjectUtils.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,10 +48,11 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostsPhotoRepository postsPhotoRepository;
     private final FirebaseInit firebaseInit;
+
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
     public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond) {
         return postRepositoryCustom.findPostsBySearch(searchCond).stream()
-                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
+                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), isEmpty(p.getPhotoList()) ? null : p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
                 .collect(Collectors.toList());
     }
 
@@ -128,9 +132,16 @@ public class PostService {
         postDto.setId(findPost.getId());
         postDto.setRegion(findPost.getTown());
         postDto.setPrice(findPost.getPrice());
+        postDto.setView(findPost.getView());
 
         return postDto;
 
+    }
+
+    //Post 조회수 증가 로직
+    @Transactional
+    public Long updateView(Long postId) {
+        return postRepository.updateView(postId);
     }
 
     //Post삭제 (실제로는 delete가 아니라 update(삭제 플래그 값을 Y로 업데이트함))
@@ -162,13 +173,18 @@ public class PostService {
 
     //Post를 등록할 때 중간에 PostsPhoto 저장하는 로직
     @Transactional
-    public void savePostPhotos(Long postId, List<MultipartFile> files) {
+    public void savePostPhotos(Long postId, AuthUser authUser, List<MultipartFile> files) {
+        //입력된 이미지가 없으면 이 메서드는 실행하지 않음
         if (CollectionUtils.isEmpty(files)) {
             return;
         }
+        //입력된 이미지가 있다면 savePost메서드에서 저장된 게시물을 찾음
         Post findPost = postRepository.findById(postId).orElseThrow();
-        //.get 말고 orElseThrow로 에러 처리
-        //Post를 수정할 때 이미지가 비어있지 않으면 레파지토리에서 삭제하고 아래 포문에서 다시 추가
+        //사용자 인증 정보가 일치하지 않으면 이 메서드는 실행하지 않음
+        if (!findPost.getUser().getUid().equals(authUser.getUid())) {
+            return;
+        }
+        //Post를 등록 및 수정할 때 이미지가 이미 존재한다면 레파지토리에서 삭제함
         if (!findPost.getPhotoList().isEmpty()) {
             postsPhotoRepository.deleteByPostId(postId);
         }
@@ -256,6 +272,6 @@ public class PostService {
         private TradeStatus status;
         private boolean isOwner;
         private List<String> tags;
-
+        private Integer view;
     }
 }
