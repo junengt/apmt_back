@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -66,15 +67,24 @@ public class PostApiController {
 
     // 판매글에서 판매자의 판매 목록 조회 API
     /**
-     * 판매자의 정보 + 전체 판매 목록 + 리뷰 목록을 가져온다
+     * 판매자의 정보를 가져온다
      * @param uid 판매자의 ID
-     * @return 판매자의 정보 + 전체 판매 목록 + 리뷰 목록
+     * @return 판매자의 정보
      */
-    @GetMapping("/seller_profile/{uid}")
-    public Result getPostsSellerProfile(@PathVariable String uid) {
+    @GetMapping("/seller_profile/{uid}/info")
+    public Result getSellerProfileByUid(@PathVariable String uid) throws FirebaseAuthException {
         return new Result(postService.getSellerInfoByUserId(uid));
     }
 
+    @GetMapping("seller_profile/{uid}/reviews")
+    public Result getReviewsByUid(@PathVariable String uid) throws FirebaseAuthException {
+        return new Result(postService.getSellerReviewsBySellerId(uid));
+    }
+
+    @GetMapping("/seller_profile/{uid}/posts")
+    public Result getUserPostList(@PathVariable String uid){
+        return new Result(postService.findUserPostSellingList(uid));
+    }
     @Data
     @AllArgsConstructor
     static class Result<T> {

@@ -4,10 +4,11 @@ import click.applemt.apmt.config.FirebaseInit;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.domain.post.*;
-import click.applemt.apmt.repository.ReviewRepository;
+import click.applemt.apmt.repository.reviewRepository.ReviewRepository;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
 import click.applemt.apmt.repository.tradeHistroyRepository.TradeHistoryRepository;
+import click.applemt.apmt.repository.userRepository.UserRepository;
 import click.applemt.apmt.util.Time;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -36,6 +37,7 @@ public class PostService {
     private final PostsPhotoRepository postsPhotoRepository;
     private final TradeHistoryRepository tradeHistoryRepository;
     private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
 
     private final FirebaseInit firebaseInit;
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
@@ -71,7 +73,6 @@ public class PostService {
 
     public List<PostListDto> findUserBuyingList(String uid){
         List<TradeHistory> postsByUser = postRepository.findPostsByBuying(uid);
-
         List<PostListDto> buyingList = new ArrayList<>();
         for (TradeHistory tradeHistory : postsByUser) {
             Post post = tradeHistory.getPost(); //
@@ -92,29 +93,45 @@ public class PostService {
 
 
     /**
-     * uid에 해당하는 판매자의 uid, 전체 판매글 목록, 전체 후기 내역을 가져온다
+     * uid에 해당하는 판매자의 uid, displayName을 가져온다
      * @param uid 판매자의 uid
-     * @return 판매자 정보(uid, 전체 판매글 목록, 전체 후기 내역)
+     * @return 판매자 정보(uid, displayName)
      */
-    public SellerInfoDto getSellerInfoByUserId(String uid) {
+    public SellerInfoDto getSellerInfoByUserId(String uid) throws FirebaseAuthException {
+        // 반환 값 초기 생성
         SellerInfoDto sellerInfo = new SellerInfoDto();
-        List<ReviewListDto> reviewListDtos = new ArrayList<>();
-        List<Review> reviews = reviewRepository.getReviewsBySellerUid(uid);
-        for (Review review : reviews) {
-            ReviewListDto reviewListDto = new ReviewListDto();
-            User user = review.getTradeHistory().getUser();
-            reviewListDto.setId(review.getId());
-            reviewListDto.setBuyerUid(user.getUid());
-            reviewListDto.setContent(review.getContent());
-            reviewListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(review.getCreatedTime())));
-            reviewListDtos.add(reviewListDto);
-        }
-
+        String displayName = FirebaseAuth.getInstance().getUser(uid).getDisplayName();
+        // 판매자 정보 DTO에 값 설정
         sellerInfo.setSellerUid(uid);
-        sellerInfo.setPosts(findUserPostSellingList(uid));
-        sellerInfo.setReviews(reviewListDtos);
+        sellerInfo.setSellerDisplayName(displayName);
+
         return sellerInfo;
     }
+
+    public List<ReviewListDto> getSellerReviewsBySellerId(String uid) throws FirebaseAuthException {
+        // 후기 내역 DTO List 생성
+        List<ReviewListDto> reviewListDtos = new ArrayList<>();
+        // 판매자 uid로 판매자의 전체 후기 내역을 가져온다
+        List<Review> reviews = reviewRepository.getReviewsBySellerUid(uid);
+        // 전체 후기 내역을 순회한다
+        for (Review review : reviews) {
+            // 후기 내역 DTO 생성
+            ReviewListDto reviewListDto = new ReviewListDto();
+            // 후기 내역 DTO 값 설정
+            User buyer = review.getTradeHistory().getUser();
+            String buyerDisplayName = FirebaseAuth.getInstance().getUser(buyer.getUid()).getDisplayName();
+            reviewListDto.setId(review.getId());
+            reviewListDto.setBuyerUid(buyer.getUid());
+            reviewListDto.setBuyerDisplayName(buyerDisplayName);
+            reviewListDto.setContent(review.getContent());
+            reviewListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(review.getCreatedTime())));
+            // 후기 내역 DTO List에 후기 내역 DTO List 추가
+            reviewListDtos.add(reviewListDto);
+        }
+        return reviewListDtos;
+    }
+
+
 
     public PostDto findOne(Long postId, FirebaseToken decodedToken) throws FirebaseAuthException {
         Post findPost = postRepository.findById(postId).get();
@@ -175,8 +192,7 @@ public class PostService {
     @NoArgsConstructor
     public class SellerInfoDto {    // 판매자 정보
         private String sellerUid;
-        private List<ReviewListDto> reviews;
-        private List<PostListDto> posts;
+        private String sellerDisplayName;
     }
     @Data
     @AllArgsConstructor
@@ -184,6 +200,7 @@ public class PostService {
     public class ReviewListDto {    // 후기 내역
         private Long id;
         private String buyerUid;
+        private String buyerDisplayName;
         private String content;
         private String afterDate;
     }
