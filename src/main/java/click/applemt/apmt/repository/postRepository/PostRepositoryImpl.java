@@ -39,13 +39,24 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     public List<Post> findPostsBySearch(PostSearchCondition searchCond) {
         return queryFactory
                 .selectFrom(post)
+                .distinct()
                 .leftJoin(post.photoList, postsPhoto)
                 .fetchJoin()
+                .join(post.tags,tag)
                 .where(searchLike(searchCond.getSearch()),
                         (post.deleted.isFalse()),
-                        (post.status.in(TradeStatus.ING,TradeStatus.END)))
-                //tag.name.in 추가해야함
+                        (post.status.in(TradeStatus.ING,TradeStatus.END))
+                                .and(tagIn(searchCond.getTags())))
+                .orderBy(post.updatedTime.desc())
                 .fetch();
+    }
+
+    private BooleanExpression tagIn(String tags) {
+        if (tags.isEmpty()) {
+            return null;
+        } else {
+            return tag.name.in(tags.split(","));
+        }
     }
 
 

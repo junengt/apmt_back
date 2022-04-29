@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
+import java.io.File;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -31,7 +33,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .cors().and()
-                .authorizeRequests()
+                .authorizeRequests().antMatchers("/images/**","/**","static","/static").permitAll()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -41,7 +43,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override public void configure(WebSecurity web) throws Exception { // 인증 예외 URL설정
-         web.ignoring()
+        String itemRoot = new File("").getAbsolutePath() + "\\src\\main\\resources\\static\\";
+
+         web.ignoring().antMatchers(HttpMethod.GET,"/api/image").antMatchers(itemRoot)
                  .antMatchers(HttpMethod.GET, "/api/items")
                  .antMatchers(HttpMethod.GET,"/api/items/*");
     }
