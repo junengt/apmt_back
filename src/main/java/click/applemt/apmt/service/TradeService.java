@@ -101,12 +101,14 @@ public class TradeService {
         //내 리뷰인지 판단한다.
         if (b || count > 0) {
             throw new Exception("잘못된 요청");
-        } // 내리뷰가 아니거나 이미 리뷰가 작성된 경우 null을 반환한다.
+        } // 내리뷰가 아니거나 이미 리뷰가 작성된 경우 오류를 던진다.
 
-        //거래내역 구매자 ID와 인증유저와 비교해서 틀리면 null을 반환시킨다.
+        //거래내역 구매자 ID와 인증유저와 비교해서 틀리면 오류를 던진다.
         UserRecord seller = FirebaseAuth.getInstance().getUser(trade.getPost().getUser().getUid());
         // 판매자 닉네임을 얻기위해 uid로 파베데이터를 가져온다.
         ReviewPageTradeDto reviewPageTradeDto = new ReviewPageTradeDto();
+        reviewPageTradeDto.setPhotoPath(trade.getPost().getPhotoList().get(0).getPhotoPath());
+        reviewPageTradeDto.setSellerUid(trade.getPost().getUser().getUid());
         reviewPageTradeDto.setTradeId(trade.getId());
         reviewPageTradeDto.setItemName(trade.getPost().getTitle());
         reviewPageTradeDto.setSellerName(seller.getDisplayName());
@@ -125,6 +127,8 @@ public class TradeService {
 
     @Data
     static class ReviewPageTradeDto {
+        private String sellerUid;
+        private String photoPath;
         private String sellerName;
         private String ItemName;
         private Long tradeId;

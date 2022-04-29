@@ -2,6 +2,7 @@ package click.applemt.apmt.domain.post;
 
 import click.applemt.apmt.domain.common.BaseEntity;
 import click.applemt.apmt.domain.point.TradeHistory;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,7 @@ public class Review extends BaseEntity {
     @Column(name = "review_id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY) //단방향 연관관계 설계
     @JoinColumn(name = "trade_history_id")
     private TradeHistory tradeHistory;

@@ -1,6 +1,6 @@
 #FileLock
-#Tue Apr 26 16:40:19 KST 2022
-server=localhost\:57383
-hostName=localhost
+#Thu Apr 28 22:56:47 KST 2022
+server=218.38.137.28\:50564
+hostName=218.38.137.28
 method=file
-id=1806199ae097dc680761fb350f66affaa80ab8cd75f
+id=1807075b94a25d434b75959419be3f4e85c92670930
