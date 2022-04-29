@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,10 +51,10 @@ public class PostApiController {
     }
 
     //중고거래 글 등록 API
-    @PostMapping("/items")
+    @PostMapping(value = "/item", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public String savePost(@AuthenticationPrincipal AuthUser authUser,
                          @RequestPart PostReqDto postReqDto,
-                         @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+                         @RequestPart(value = "file", name = "file", required = false) List<MultipartFile> files) {
         Long postId = postService.savePost(postReqDto, authUser);
 
         postService.savePostPhotos(postId, authUser, files);
@@ -61,7 +62,7 @@ public class PostApiController {
     }
 
     //중고거래 글 수정 API
-    @PutMapping("/items/{id}")
+    @PutMapping("/item/{id}")
     public String updatePost(@AuthenticationPrincipal AuthUser authUser,
                              @PathVariable("id") Long postId,
                              @RequestPart PostUpdateReqDto postUpdateReqDto,

@@ -12,14 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostSearchCondition {
-    private String search;
-    private List<String> tags;
 
+    private String search;
+    private String tags = "";
     public PostSearchCondition(String search) {
         this.search = search;
     }
 
-    public PostSearchCondition(List<String> tags) {
-        this.tags = tags;
-    }
 }

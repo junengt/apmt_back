@@ -24,13 +24,16 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.*;
@@ -135,12 +138,17 @@ public class PostService {
         }
         for (MultipartFile file : files) {
             //하나의 게시물을 참조하는 이미지 하나 생성 (루프 돌면서 복수의 이미지 넣기)
-            String filePath = "C:\\Users\\kaas1\\Downloads\\" + file.getOriginalFilename();
+            //이미지에 랜덤 UUID 생성해서 집어넣음으로 이미지 덮어쓰임 방지
+            String uuid = UUID.randomUUID().toString();
+            String absolPath = new File("").getAbsolutePath() + "\\";
+            String testPath = "images/";
             //filePath 수정해야함
-            PostsPhoto postsPhoto = PostsPhoto.builder().photoPath(filePath).post(findPost).build();
+            String imagePath = testPath + uuid + file.getOriginalFilename();
+            PostsPhoto postsPhoto = PostsPhoto.builder().photoPath(imagePath).post(findPost).build();
             //파일을 서버 저장소에 저장
             try {
-                Files.copy(file.getInputStream(), Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
+                file.transferTo(new File(absolPath + imagePath));
+                Files.copy(file.getInputStream(), Path.of(absolPath + imagePath), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 System.out.println(e);
                 //콘솔 출력 말고 log출력으로..
