@@ -50,7 +50,6 @@ public class PostService {
 
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
-    private final PostRepositoryCustom postRepositoryCustom;
     private final UserRepository userRepository;
     private final PostsPhotoRepository postsPhotoRepository;
     private final TradeHistoryRepository tradeHistoryRepository;
@@ -60,7 +59,7 @@ public class PostService {
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
     public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond) {
         return postRepository.findPostsBySearch(searchCond).stream()
-                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), isEmpty(p.getPhotoList()) ? null : p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
+                .map(p -> new PostListDto(p.getId(), Time.calculateTime(Timestamp.valueOf(p.getCreatedTime())), isEmpty(p.getPhotoList()) ? "https://firebasestorage.googleapis.com/v0/b/applemart-eeb42.appspot.com/o/6CIDfWMwFrQwJgt3FEy3zoGijU63%2F3b5c9b59-4b47-4ae2-85fe-2f4983a097c3?alt=media&token=e763815b-a33c-4656-82fb-b0113f6a6423" : p.getPhotoList().get(0).getPhotoPath(), p.getTitle(), p.getPrice(), p.getContent(), p.getTown(), p.getStatus()))
                 .collect(Collectors.toList());
     }
 
@@ -193,7 +192,7 @@ public class PostService {
     //Post 조회수 증가 로직
     @Transactional
     public Long updateView(Long postId) {
-        return postRepositoryCustom.updateView(postId);
+        return postRepository.updateView(postId);
     }
 
     //Post삭제 (실제로는 delete가 아니라 update(삭제 플래그 값을 Y로 업데이트함))
@@ -248,14 +247,21 @@ public class PostService {
             //하나의 게시물을 참조하는 이미지 하나 생성 (루프 돌면서 복수의 이미지 넣기)
             //이미지에 랜덤 UUID 생성해서 집어넣음으로 이미지 덮어쓰임 방지
             String uuid = UUID.randomUUID().toString();
-            String absolPath = new File("").getAbsolutePath() + "\\";
+            String absolPath = new File("").getAbsolutePath() + "/";
+            System.out.println("absolPath = " + absolPath);
             String testPath = "images/";
             //filePath 수정해야함
             String imagePath = testPath + uuid + file.getOriginalFilename();
             PostsPhoto postsPhoto = PostsPhoto.builder().photoPath(imagePath).post(findPost).build();
+            File newFile = new File(absolPath + imagePath);
+            if(newFile.mkdirs()){
+                System.out.println("디렉터리 생성성공");
+            }else{
+                System.out.println("디렉터리가 이미 있습니다.");
+            }
             //파일을 서버 저장소에 저장
             try {
-                file.transferTo(new File(absolPath + imagePath));
+                file.transferTo(newFile);
                 Files.copy(file.getInputStream(), Path.of(absolPath + imagePath), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 System.out.println(e);
@@ -347,6 +353,10 @@ public class PostService {
         private String content;
         private String Region;
         private TradeStatus status;
+
+        public PostListDto() {
+
+        }
     }
 
     @Getter
