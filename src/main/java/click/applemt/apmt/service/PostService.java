@@ -65,7 +65,6 @@ public class PostService {
      * @return PostListDto 판매목록 Dto
      */
     public  List<PostListDto> findUserPostSellingList(String uid){
-
         List<Post> postsByUser = postRepository.findPostsByUserSelling(uid);
         List<PostListDto> sellingList = new ArrayList<>();
         for (Post post : postsByUser) {
@@ -79,26 +78,33 @@ public class PostService {
             postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
             postListDto.setStatus(post.getStatus());
             sellingList.add(postListDto);
+
         }
+
         return sellingList;
     }
 
-    public List<PostListDto> findUserBuyingList(String uid){
+
+    public List<PostListReviewDto> findUserBuyingList(String uid){
         List<TradeHistory> postsByUser = postRepository.findPostsByBuying(uid);
 
-        List<PostListDto> buyingList = new ArrayList<>();
+        List<PostListReviewDto> buyingList = new ArrayList<>();
         for (TradeHistory tradeHistory : postsByUser) {
             Post post = tradeHistory.getPost(); //
-            PostListDto postListDto = new PostListDto();
-            postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
-            postListDto.setContent(post.getContent());
-            postListDto.setId(post.getId());
-            postListDto.setPrice(post.getPrice());
-            postListDto.setRegion(post.getTown());
-            postListDto.setTitle(post.getTitle());
-            postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
-            postListDto.setStatus(post.getStatus());
-            buyingList.add(postListDto);
+            PostListReviewDto postListReviewDto = new PostListReviewDto();
+            postListReviewDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
+            postListReviewDto.setContent(post.getContent());
+            postListReviewDto.setId(post.getId());
+            if(tradeHistory.getReviews().size() != 0){
+            postListReviewDto.setReviewId(tradeHistory.getReviews().get(0).getId());
+            }
+            postListReviewDto.setTradeHistoryId(tradeHistory.getId());
+            postListReviewDto.setPrice(post.getPrice());
+            postListReviewDto.setRegion(post.getTown());
+            postListReviewDto.setTitle(post.getTitle());
+            postListReviewDto.setImg(post.getPhotoList().get(0).getPhotoPath());
+            postListReviewDto.setStatus(post.getStatus());
+            buyingList.add(postListReviewDto);
         }
         return buyingList;
     }
@@ -269,6 +275,14 @@ public class PostService {
         return findPost.getId();
     }
 
+    @Transactional
+    public Long changeEndStatus(Long postId, AuthUser authUser) {
+        Post findPost = postRepository.findById(postId).get();
+        if (findPost.getUser().getUid().equals(authUser.getUid())) {
+            findPost.setStatus(TradeStatus.END);
+        }
+        return findPost.getId();
+    }
 
     /**
      * postId에 해당하는 판매글을 가져온다
@@ -308,6 +322,22 @@ public class PostService {
     @NoArgsConstructor
     public class PostListDto {      // 판매글 내역
         private Long id;
+        private String afterDate;
+        private String img;
+        private String title;
+        private Long price;
+        private String content;
+        private String Region;
+        private TradeStatus status;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public class PostListReviewDto {      // 판매글 리뷰포함 내역
+        private Long id;
+        private Long reviewId;
+        private Long tradeHistoryId;
         private String afterDate;
         private String img;
         private String title;

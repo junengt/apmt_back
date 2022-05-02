@@ -23,16 +23,18 @@ public class LikePostService {
     //좋아요 기능 로직
     @Transactional
     public boolean addLike(AuthUser authUser, Long postId) {
-        User findUser = userRepository.findById(authUser.getUid()).orElseThrow();
+        User findUser = userRepository.findByUid(authUser.getUid()).orElseThrow();
         Post findPost = postRepository.findById(postId).orElseThrow();
-        if(isNotLike(findUser, findPost)) {
+        if(!isNotLike(findUser, findPost)) {
             likePostRepository.save(new LikePost(findUser, findPost));
-            return true;
+        }else{
+            likePostRepository.deleteByPostId(findPost.getId());
         }
-        return false;
+        return true;
     }
 
-    private boolean isNotLike(User user, Post findPost) {
-        return likePostRepository.findByUserAndPost(user,findPost).isPresent();
+    private boolean isNotLike(User user, Post post) {
+        return likePostRepository.findByUserAndPost(user,post).isPresent();
     }
+
 }

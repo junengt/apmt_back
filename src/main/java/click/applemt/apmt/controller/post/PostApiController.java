@@ -3,12 +3,14 @@ package click.applemt.apmt.controller.post;
 import click.applemt.apmt.security.AuthUser;
 import click.applemt.apmt.security.util.RequestUtil;
 import click.applemt.apmt.service.PostService;
+import click.applemt.apmt.service.ReviewService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +30,7 @@ public class PostApiController {
 
     private final PostService postService;
     private final FirebaseAuth firebaseAuth;
+    private final ReviewService reviewService;
 
     //등록된 중고거래 글 조회 API
     @GetMapping("/items")
@@ -45,6 +48,16 @@ public class PostApiController {
     public Result getUserBuyList(@AuthenticationPrincipal AuthUser authUser){
         return new Result(postService.findUserBuyingList(authUser.getUid()));
     }
+
+
+    @PutMapping("/sale/changeend/{id}")
+    public String changeEnd(@AuthenticationPrincipal AuthUser authUser,
+                             @PathVariable("id") Long postId) {
+        postService.changeEndStatus(postId,authUser);
+        return "변경완료";
+    }
+
+
 
     //고객이 찜한 리스트 조회 API
     @GetMapping("/like")
