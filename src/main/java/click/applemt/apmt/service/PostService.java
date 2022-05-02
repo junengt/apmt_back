@@ -151,7 +151,13 @@ public class PostService {
             PostsPhoto postsPhoto = PostsPhoto.builder().photoPath(imagePath).post(findPost).build();
             //파일을 서버 저장소에 저장
             try {
-                file.transferTo(new File(absolPath + imagePath));
+                File newFile = new File(absolPath + imagePath);
+                if(newFile.mkdirs()){
+                    System.out.println("디렉터리 생성성공");
+                }else{
+                    System.out.println("디렉터리가 이미 있습니다.");
+                }
+                file.transferTo(newFile);
                 Files.copy(file.getInputStream(), Path.of(absolPath + imagePath), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 System.out.println(e);
