@@ -28,7 +28,7 @@ public class LikePostService {
         if(!isNotLike(findUser, findPost)) {
             likePostRepository.save(new LikePost(findUser, findPost));
         }else{
-            likePostRepository.deleteByPostId(findPost.getId());
+            likePostRepository.deleteByPostIdAndUserEquals(findPost.getId(),findUser);
         }
         return true;
     }
