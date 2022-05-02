@@ -44,7 +44,7 @@ public class PostApiController {
     //중고거래 글 삭제 API(DELETE X, UPDATE O)
     @DeleteMapping("/items/{id}")
     public String deletePost(@PathVariable("id") Long postId,
-                           @AuthenticationPrincipal AuthUser authUser) {
+                             @AuthenticationPrincipal AuthUser authUser) {
         postService.deleteByPostId(postId, authUser);
         return "삭제됨";
         //인증 정보가 올바르지 않아도 삭제됨으로 표시되나 조회 쿼리만 나가고 삭제 플래그 업데이트 쿼리가 나가진 않음 에러처리 해야함
@@ -53,8 +53,8 @@ public class PostApiController {
     //중고거래 글 등록 API
     @PostMapping(value = "/item", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public String savePost(@AuthenticationPrincipal AuthUser authUser,
-                         @RequestPart PostReqDto postReqDto,
-                         @RequestPart(value = "file", name = "file", required = false) List<MultipartFile> files) {
+                           @RequestPart PostReqDto postReqDto,
+                           @RequestPart(value = "file", name = "file", required = false) List<MultipartFile> files) {
         Long postId = postService.savePost(postReqDto, authUser);
 
         postService.savePostPhotos(postId, authUser, files);
@@ -62,11 +62,12 @@ public class PostApiController {
     }
 
     //중고거래 글 수정 API
-    @PutMapping("/item/{id}")
+    @PutMapping(value = "/item/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public String updatePost(@AuthenticationPrincipal AuthUser authUser,
                              @PathVariable("id") Long postId,
                              @RequestPart PostUpdateReqDto postUpdateReqDto,
-                             @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+                             @RequestPart(value = "file", name = "file", required = false) List<MultipartFile> files) {
+
         Long updatePostId = postService.updatePost(postId, postUpdateReqDto, authUser);
         postService.savePostPhotos(updatePostId, authUser, files);
         return "수정됨";
@@ -86,7 +87,7 @@ public class PostApiController {
             }
         }
         postService.updateView(id);
-        return new Result(postService.findOne(id,decodedToken));
+        return new Result(postService.findOne(id, decodedToken));
     }
 
     @Data

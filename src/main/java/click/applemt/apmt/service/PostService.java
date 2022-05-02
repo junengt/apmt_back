@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -143,7 +144,10 @@ public class PostService {
             String absolPath = new File("").getAbsolutePath() + "\\";
             String testPath = "images/";
             //filePath 수정해야함
-            String imagePath = testPath + uuid + file.getOriginalFilename();
+            String imagePath = testPath + uuid + ".jpg";
+
+            System.out.println("imagePath = " + imagePath);
+
             PostsPhoto postsPhoto = PostsPhoto.builder().photoPath(imagePath).post(findPost).build();
             //파일을 서버 저장소에 저장
             try {
