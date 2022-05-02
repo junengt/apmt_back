@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api")
@@ -77,7 +78,7 @@ public class PostApiController {
     }
 
     @GetMapping("seller_profile/{uid}/reviews")
-    public Result getReviewsByUid(@PathVariable String uid) throws FirebaseAuthException {
+    public Result getReviewsByUid(@PathVariable String uid) throws FirebaseAuthException, ExecutionException, InterruptedException {
         return new Result(postService.getSellerReviewsBySellerId(uid));
     }
 

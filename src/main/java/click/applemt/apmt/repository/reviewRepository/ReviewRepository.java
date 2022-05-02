@@ -25,7 +25,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>{
      * @param uid 판매자의 User ID
      * @return 판매자의 거래 후기 내역
      */
-    @Query("SELECT r FROM Review r WHERE r.tradeHistory.post.user.uid =:uid")
+    @Query("SELECT r FROM Review r WHERE r.sellerUid = :uid")
     List<Review> getReviewsBySellerUid(String uid);
 
 
