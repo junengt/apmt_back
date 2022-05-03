@@ -126,11 +126,11 @@ public class InitDB {
                 post.setPrice(price);
                 em.persist(post);
 
-//                PostsPhoto photo = new PostsPhoto();
-//                String img_src = (String) jsonObject.get("img_src");
-//                photo.setPost(post);
-//                photo.setPhotoPath(img_src);
-//                em.persist(photo);
+                PostsPhoto photo = new PostsPhoto();
+                String img_src = (String) jsonObject.get("img_src");
+                photo.setPost(post);
+                photo.setPhotoPath(img_src);
+                em.persist(photo);
 
                 // 판매자 user1 또는 user2의 판매 상품을
                 // 구매자 user3이 모든 상품을 구매한다는 가정
