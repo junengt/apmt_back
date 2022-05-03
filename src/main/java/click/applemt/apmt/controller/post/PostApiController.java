@@ -66,12 +66,6 @@ public class PostApiController {
         return new Result<>(postService.findUserLikePostList(authUser.getUid()));
     }
 
-    @GetMapping("/items/form/{id}")
-    public PostUpdateForm getUpdatePost(@PathVariable("id") Long postId,
-                                        @AuthenticationPrincipal AuthUser authUser) {
-        PostUpdateForm form = postService.findPostForm(postId, authUser);
-        return form;
-    }
 
     //중고거래 글 삭제 API(DELETE X, UPDATE O)
     @DeleteMapping("/items/{id}")
