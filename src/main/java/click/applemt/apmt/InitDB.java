@@ -1,10 +1,8 @@
 package click.applemt.apmt;
 
 import click.applemt.apmt.domain.User;
-import click.applemt.apmt.domain.post.Post;
-import click.applemt.apmt.domain.post.PostsPhoto;
-import click.applemt.apmt.domain.post.Tag;
-import click.applemt.apmt.domain.post.TradeStatus;
+import click.applemt.apmt.domain.point.TradeHistory;
+import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,9 +44,8 @@ public class InitDB {
 
         public void doInit() throws IOException, ParseException {
             JSONParser parser = new JSONParser();
-            File file = resourceLoader.getResource("classpath:/static/carrot.json").getFile();
-            FileReader fileReader = new FileReader(file);
-            ArrayList<JSONObject> jsonObjects = (ArrayList<JSONObject>) parser.parse(fileReader);
+            InputStream file = resourceLoader.getResource("classpath:/static/carrot.json").getInputStream();
+            ArrayList<JSONObject> jsonObjects = (ArrayList<JSONObject>) parser.parse(new InputStreamReader(file));
             // 통일성 있는 데이터는 한번만 persist 한다
 
 
@@ -83,16 +78,21 @@ public class InitDB {
             user2.setUid("kSuKt7fM0ufWRuzVUii8HyAG4by2");
             em.persist(user2);
 
+            User user3 = new User();
+            user3.setUid("QkWS3G5rC5dRG59yTWSuRjWBm0n2");
+            em.persist(user3);
+
             for (JSONObject jsonObject : jsonObjects) {
+
                 User user = null;
                 if (idx % 2 == 0) {
                     // 짝수번째일때 강팀장님 ID에 데이터 추가
-                    user = userRepository.findById(user1.getUid()).get();
+                    user = userRepository.findByUid(user1.getUid()).get();
                 } else {
                     // 홀수번째일때 이상무 ID에 데이터 추가
-                    user = userRepository.findById(user2.getUid()).get();
+                    user = userRepository.findByUid(user2.getUid()).get();
                 }
-                idx++;
+
 
 
                 String tagsJson = (String) jsonObject.get("tags");
@@ -126,12 +126,27 @@ public class InitDB {
                 post.setPrice(price);
                 em.persist(post);
 
-                PostsPhoto photo = new PostsPhoto();
-                String img_src = (String) jsonObject.get("img_src");
-                photo.setPost(post);
-                photo.setPhotoPath(img_src);
-                em.persist(photo);
+//                PostsPhoto photo = new PostsPhoto();
+//                String img_src = (String) jsonObject.get("img_src");
+//                photo.setPost(post);
+//                photo.setPhotoPath(img_src);
+//                em.persist(photo);
 
+                // 판매자 user1 또는 user2의 판매 상품을
+                // 구매자 user3이 모든 상품을 구매한다는 가정
+
+                TradeHistory history = new TradeHistory();
+                history.setPost(post);
+                history.setUser(user3);     // 구매자
+                history.setPrice(post.getPrice());
+                em.persist(history);
+                // 구매자 User3이 후기내역을 작성했다는 가정
+                Review review = new Review();
+                review.setTradeHistory(history);
+                review.setContent("판매자님이 친절해요. "+idx);
+                em.persist(review);
+
+                idx++;
             }
         }
 

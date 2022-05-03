@@ -5,6 +5,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import javax.persistence.EntityManager;
 
+import java.util.List;
+
 import static click.applemt.apmt.domain.post.QPostsPhoto.*;
 
 public class PostsPhotoRepositoryImpl implements PostsPhotoRepositoryCustom{
@@ -22,4 +24,15 @@ public class PostsPhotoRepositoryImpl implements PostsPhotoRepositoryCustom{
                 .where(postsPhoto.post.id.eq(postId))
                 .execute();
     }
+
+    @Override
+    public void deleteByPaths(List<String> paths,Long postId) {
+
+        queryFactory
+                .delete(postsPhoto)
+                .where(postsPhoto.photoPath.notIn(paths).and(postsPhoto.post.id.eq(postId)))
+                .execute();
+
+    }
+
 }

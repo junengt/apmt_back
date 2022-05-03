@@ -33,6 +33,8 @@ public class QTradeHistory extends EntityPathBase<TradeHistory> {
 
     public final NumberPath<Long> price = createNumber("price", Long.class);
 
+    public final ListPath<click.applemt.apmt.domain.post.Review, click.applemt.apmt.domain.post.QReview> reviews = this.<click.applemt.apmt.domain.post.Review, click.applemt.apmt.domain.post.QReview>createList("reviews", click.applemt.apmt.domain.post.Review.class, click.applemt.apmt.domain.post.QReview.class, PathInits.DIRECT2);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedTime = _super.updatedTime;
 

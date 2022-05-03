@@ -6,7 +6,7 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: https://www.googleapis.com/service_accounts/v1/jwk/securetoken%40system.gserviceaccount.com
-#
+
 #server:
 #  ssl:
 #    enabled: true
@@ -16,5 +16,5 @@ spring:
 #    key-alias: apple
 #    trust-store-password: 1q2w3e4r!
 #    key-store-password: 1q2w3e4r!
-
-
+#
+#

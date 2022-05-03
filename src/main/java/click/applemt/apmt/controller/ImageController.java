@@ -29,8 +29,7 @@ public class ImageController {
     public ResponseEntity<Resource> showImage(@RequestParam Map<String, String> param) {
         File file = null;
 
-        String absolPath = new File("").getAbsolutePath() + "\\";
-        String testPath = "images/";
+        String absolPath = new File("").getAbsolutePath() + "/images/";
         String path = absolPath + param.get("path");
 
 

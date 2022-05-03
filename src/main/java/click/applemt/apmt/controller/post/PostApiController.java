@@ -33,6 +33,23 @@ public class PostApiController {
     public Result getPostList(PostSearchCondition searchCond) {
         return new Result(postService.findAllPostAndSearchKeyword(searchCond));
     }
+    //고객이 등록한 판매중 조회 API
+    @GetMapping("/sale")
+    public Result getUserPostList(@AuthenticationPrincipal AuthUser authUser){
+        return new Result(postService.findUserPostSellingList(authUser.getUid()));
+    }
+
+    //고객이 구매한 리스트 조회 API
+    @GetMapping("/buy")
+    public Result getUserBuyList(@AuthenticationPrincipal AuthUser authUser){
+        return new Result(postService.findUserBuyingList(authUser.getUid()));
+    }
+
+    //고객이 찜한 리스트 조회 API
+    @GetMapping("/like")
+    public Result getUserLikeList(@AuthenticationPrincipal AuthUser authUser){
+        return new Result<>(postService.findUserLikePostList(authUser.getUid()));
+    }
 
     @GetMapping("/items/form/{id}")
     public PostUpdateForm getUpdatePost(@PathVariable("id") Long postId,
@@ -58,7 +75,7 @@ public class PostApiController {
         Long postId = postService.savePost(postReqDto, authUser);
 
         postService.savePostPhotos(postId, authUser, files);
-        return "등록됨";
+        return postId.toString();
     }
 
     //중고거래 글 수정 API
@@ -66,10 +83,10 @@ public class PostApiController {
     public String updatePost(@AuthenticationPrincipal AuthUser authUser,
                              @PathVariable("id") Long postId,
                              @RequestPart PostUpdateReqDto postUpdateReqDto,
-                             @RequestPart(value = "file", name = "file", required = false) List<MultipartFile> files) {
-
+                             @RequestPart(name = "file", required = false) List<MultipartFile> files,
+                             @RequestPart(name = "link",required = false) List<String> links) {
         Long updatePostId = postService.updatePost(postId, postUpdateReqDto, authUser);
-        postService.savePostPhotos(updatePostId, authUser, files);
+        postService.savePostPhotos(updatePostId, authUser, files,links);
         return "수정됨";
     }
 
@@ -89,6 +106,29 @@ public class PostApiController {
         postService.updateView(id);
         return new Result(postService.findOne(id, decodedToken));
     }
+
+
+
+    // 판매글에서 판매자의 판매 목록 조회 API
+    /**
+     * 판매자의 정보 + 전체 판매 목록 + 리뷰 목록을 가져온다
+     * @param uid 판매자의 ID
+     * @return 판매자의 정보 + 전체 판매 목록 + 리뷰 목록
+     */
+    @GetMapping("/seller_profile/{uid}")
+    public Result getPostsSellerProfile(@PathVariable String uid) {
+        return new Result(postService.getSellerInfoByUserId(uid));
+    }
+
+
+/*
+        // 판매 글의 판매자의 리뷰들 조회 API
+        @GetMapping("/items/{id}/reviews")
+        public Result getSellerReviewList(@AuthenticationPrincipal AuthUser authUser) {
+
+        }
+
+*/
 
     @Data
     @AllArgsConstructor

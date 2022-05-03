@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostsPhotoRepository extends JpaRepository<PostsPhoto, Long>, PostsPhotoRepositoryCustom {
+    PostsPhoto findByPhotoPath(String photoPath);
 }

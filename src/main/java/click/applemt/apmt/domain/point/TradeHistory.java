@@ -3,10 +3,15 @@ package click.applemt.apmt.domain.point;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.common.BaseEntity;
 import click.applemt.apmt.domain.post.Post;
+import click.applemt.apmt.domain.post.Review;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 
@@ -19,11 +24,16 @@ public class TradeHistory extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trade_history_id")
     private Long id;
-
+    @JsonIgnore
     @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL) //단방향 연관관계 설계
     @JoinColumn(name = "user_id")
-    private User user;
+    private User user;      // 판매자
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "tradeHistory",fetch = FetchType.LAZY )
+    List<Review> reviews = new ArrayList<>();
+
+    @JsonIgnore
     @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL) //단방향 연관관계 설계
     @JoinColumn(name = "posts_id")
     private Post post;

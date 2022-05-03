@@ -29,12 +29,26 @@ public class AccountController {
             dto.setDate(Time.calculateTime(java.sql.Timestamp.valueOf(e.getCreatedTime())));
             dto.setPrice(e.getPrice());
 
-            if(e.getDivision().toString().equals("DEPOSIT")){
-                dto.setDivision("입금");
-            }else if(e.getDivision().toString().equals("WITHDRAW")){
-                dto.setDivision("출금");
+            switch (e.getDivision().toString()){
+                case "DEPOSIT":
+                    dto.setDivision("입금");
+
+                    break;
+                case "WITHDRAW":
+                    dto.setDivision("출금");
+
+                    break;
+                case "BUY":
+                    dto.setDivision("구매");
+
+                    break;
+                case "SELL":
+                    dto.setDivision("판매");
+                    break;
+                default:
+                    dto.setDivision("그외");
             }
-            dto.setTitle("계좌거래");
+            dto.setTitle(e.getContent());
             return dto;
         }).toList();
         return new Result(dtoList);
