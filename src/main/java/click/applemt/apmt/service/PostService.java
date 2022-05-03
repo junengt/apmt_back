@@ -50,6 +50,7 @@ public class PostService {
 
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
+    private final PostRepositoryCustom postRepositoryCustom;
     private final UserRepository userRepository;
     private final PostsPhotoRepository postsPhotoRepository;
     private final TradeHistoryRepository tradeHistoryRepository;
@@ -87,22 +88,27 @@ public class PostService {
         return sellingList;
     }
 
-    public List<PostListDto> findUserBuyingList(String uid){
+
+    public List<PostListReviewDto> findUserBuyingList(String uid){
         List<TradeHistory> postsByUser = postRepository.findPostsByBuying(uid);
 
-        List<PostListDto> buyingList = new ArrayList<>();
+        List<PostListReviewDto> buyingList = new ArrayList<>();
         for (TradeHistory tradeHistory : postsByUser) {
             Post post = tradeHistory.getPost(); //
-            PostListDto postListDto = new PostListDto();
-            postListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
-            postListDto.setContent(post.getContent());
-            postListDto.setId(post.getId());
-            postListDto.setPrice(post.getPrice());
-            postListDto.setRegion(post.getTown());
-            postListDto.setTitle(post.getTitle());
-            postListDto.setImg(post.getPhotoList().get(0).getPhotoPath());
-            postListDto.setStatus(post.getStatus());
-            buyingList.add(postListDto);
+            PostListReviewDto postListReviewDto = new PostListReviewDto();
+            postListReviewDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(post.getCreatedTime())));
+            postListReviewDto.setContent(post.getContent());
+            postListReviewDto.setId(post.getId());
+            if(tradeHistory.getReviews().size() != 0){
+            postListReviewDto.setReviewId(tradeHistory.getReviews().get(0).getId());
+            }
+            postListReviewDto.setTradeHistoryId(tradeHistory.getId());
+            postListReviewDto.setPrice(post.getPrice());
+            postListReviewDto.setRegion(post.getTown());
+            postListReviewDto.setTitle(post.getTitle());
+            postListReviewDto.setImg(post.getPhotoList().get(0).getPhotoPath());
+            postListReviewDto.setStatus(post.getStatus());
+            buyingList.add(postListReviewDto);
         }
         return buyingList;
     }
@@ -327,7 +333,6 @@ public class PostService {
         }
     }
 
-
     //Post 수정하는 로직
     @Transactional
     public Long updatePost(Long postId, PostUpdateReqDto postUpdateReqDto, AuthUser authUser) {
@@ -345,6 +350,14 @@ public class PostService {
         return findPost.getId();
     }
 
+    @Transactional
+    public Long changeEndStatus(Long postId, AuthUser authUser) {
+        Post findPost = postRepository.findById(postId).get();
+        if (findPost.getUser().getUid().equals(authUser.getUid())) {
+            findPost.setStatus(TradeStatus.END);
+        }
+        return findPost.getId();
+    }
 
     /**
      * postId에 해당하는 판매글을 가져온다
@@ -360,24 +373,6 @@ public class PostService {
         // 판매자 user ID에 해당하는 판매글 목록을 가져온다
         return postRepository.findPostsByUserSelling(sellerUserId);
     }
-
-    //수정할 Post 불러오는 로직
-    @Transactional
-    public PostUpdateForm findPostForm(Long postId, AuthUser authUser) {
-        Post findPost = postRepository.findById(postId).get();
-        if (!findPost.getUser().getUid().equals(authUser.getUid())) {
-            return null;
-        }
-        PostUpdateForm form = new PostUpdateForm();
-        form.setPrice(findPost.getPrice());
-        form.setContent(findPost.getContent());
-        form.setTags(findPost.getTags().stream().map(e -> e.getName()).toList());
-        form.setTown(findPost.getTown());
-        form.setPostsPhotos(findPost.getPhotoList());
-        form.setTitle(findPost.getTitle());
-        return form;
-    }
-
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -414,6 +409,22 @@ public class PostService {
         }
     }
 
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public class PostListReviewDto {      // 판매글 리뷰포함 내역
+        private Long id;
+        private Long reviewId;
+        private Long tradeHistoryId;
+        private String afterDate;
+        private String img;
+        private String title;
+        private Long price;
+        private String content;
+        private String Region;
+        private TradeStatus status;
+    }
     @Getter
     @Setter
     @NoArgsConstructor
