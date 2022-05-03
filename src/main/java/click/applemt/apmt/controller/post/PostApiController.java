@@ -77,7 +77,7 @@ public class PostApiController {
         Long postId = postService.savePost(postReqDto, authUser);
 
         postService.savePostPhotos(postId, authUser, files);
-        return "등록됨";
+        return postId.toString();
     }
 
     //중고거래 글 수정 API
@@ -85,9 +85,10 @@ public class PostApiController {
     public String updatePost(@AuthenticationPrincipal AuthUser authUser,
                              @PathVariable("id") Long postId,
                              @RequestPart PostUpdateReqDto postUpdateReqDto,
-                             @RequestPart(name = "file", required = false) List<MultipartFile> files) {
+                             @RequestPart(name = "file", required = false) List<MultipartFile> files,
+                             @RequestPart(name = "link",required = false) List<String> links) {
         Long updatePostId = postService.updatePost(postId, postUpdateReqDto, authUser);
-        postService.savePostPhotos(updatePostId, authUser, files);
+        postService.savePostPhotos(updatePostId, authUser, files,links);
         return "수정됨";
     }
 

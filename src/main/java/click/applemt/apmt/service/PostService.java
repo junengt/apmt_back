@@ -222,36 +222,89 @@ public class PostService {
         return post.getId();
     }
 
-    //Post를 등록할 때 중간에 PostsPhoto 저장하는 로직
+    //Post를 수정할 때 중간에 PostsPhoto 저장하는 로직
     @Transactional
-    public void savePostPhotos(Long postId, AuthUser authUser, List<MultipartFile> files) {
+    public void savePostPhotos(Long postId, AuthUser authUser, List<MultipartFile> files, List<String> links) {
         //입력된 이미지가 있다면 savePost메서드에서 저장된 게시물을 찾음
         Post findPost = postRepository.findById(postId).orElseThrow();
+
         //사용자 인증 정보가 일치하지 않으면 이 메서드는 실행하지 않음 -> 에러처리로 바꾸든 없애든 해야함
+        List<PostsPhoto> postPhotos = findPost.getPhotoList();
+        List<String> paths =  links.stream().map((link) -> {
+            if(link.indexOf("postId_"+postId+"/") > -1){
+                String path = link.substring(link.indexOf("postId_"+postId+"/"));
+                return path;
+            }
+            return null;
+        }).toList();
+
+        postsPhotoRepository.deleteByPaths(paths,postId);
+
+        System.out.println("postPhotos = " + postPhotos);
         if (!findPost.getUser().getUid().equals(authUser.getUid())) {
             return;
         }
         //Post를 수정할 때 이미지가 이미 존재하고 이미지 저장을 하지 않는다면 레파지토리에서 삭제함
         if (!findPost.getPhotoList().isEmpty() && CollectionUtils.isEmpty(files)) {
-            postsPhotoRepository.deleteByPostId(postId);
+            postPhotos.clear();
         }
-        //Post를 수정할때 이미지가 이미 존재한다면 레파지토리에서 삭제함
-        if (!findPost.getPhotoList().isEmpty()) {
-            postsPhotoRepository.deleteByPostId(postId);
-        }
+//        //Post를 수정할때 이미지가 이미 존재한다면 레파지토리에서 삭제함
+//        if (!findPost.getPhotoList().isEmpty()) {
+//            postPhotos.clear();
+//        }
+        String absolPath =  new File("").getAbsolutePath() + "/images/" ;
+        String postPath =  "postId_"+ postId +"/";
+        deleteFiles(paths, absolPath, postPath);
+
         //Post를 등록할 때 이미지가 없으면 이 메서드는 실행하지 않음
         if (CollectionUtils.isEmpty(files)) {
             return;
         }
+        makeImgFiles(postId, files, findPost, postPhotos);
+
+        findPost.setPhotoList(postPhotos);
+    }
+
+    private void deleteFiles(List<String> paths, String absolPath, String postPath) {
+        File dir = new File(absolPath + postPath);
+        String[] filenames = dir.list();
+        for(String filename : filenames){
+            if(!paths.contains(postPath +filename)){
+                File deleteFile = new File(dir + "/" +filename);
+                deleteFile.delete();
+            }
+        }
+    }
+
+
+    @Transactional
+    public void savePostPhotos(Long postId, AuthUser authUser, List<MultipartFile> files) {
+        //입력된 이미지가 있다면 savePost메서드에서 저장된 게시물을 찾음
+        Post findPost = postRepository.findById(postId).orElseThrow();
+        //사용자 인증 정보가 일치하지 않으면 이 메서드는 실행하지 않음 -> 에러처리로 바꾸든 없애든 해야함
+        List<PostsPhoto> postPhotos = findPost.getPhotoList();
+
+        if (!findPost.getUser().getUid().equals(authUser.getUid())) {
+            return;
+        }
+
+        //Post를 등록할 때 이미지가 없으면 이 메서드는 실행하지 않음
+        if (CollectionUtils.isEmpty(files)) {
+            return;
+        }
+        makeImgFiles(postId, files, findPost, postPhotos);
+        findPost.setPhotoList(postPhotos);
+    }
+
+    private void makeImgFiles(Long postId, List<MultipartFile> files, Post findPost, List<PostsPhoto> postPhotos) {
         for (MultipartFile file : files) {
             //하나의 게시물을 참조하는 이미지 하나 생성 (루프 돌면서 복수의 이미지 넣기)
             //이미지에 랜덤 UUID 생성해서 집어넣음으로 이미지 덮어쓰임 방지
             String uuid = UUID.randomUUID().toString();
-            String absolPath = new File("").getAbsolutePath() + "/";
-            System.out.println("absolPath = " + absolPath);
-            String testPath = "images/";
+            String absolPath = new File("").getAbsolutePath() + "/images/";
+            String postPath =  "postId_"+ postId +"/";
             //filePath 수정해야함
-            String imagePath = testPath + uuid + file.getOriginalFilename();
+            String imagePath = postPath + uuid + file.getOriginalFilename();
             PostsPhoto postsPhoto = PostsPhoto.builder().photoPath(imagePath).post(findPost).build();
             File newFile = new File(absolPath + imagePath);
             if(newFile.mkdirs()){
@@ -261,6 +314,8 @@ public class PostService {
             }
             //파일을 서버 저장소에 저장
             try {
+                System.out.println("file.getResource() = " + file.getBytes());
+
                 file.transferTo(newFile);
                 Files.copy(file.getInputStream(), Path.of(absolPath + imagePath), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
@@ -268,7 +323,7 @@ public class PostService {
                 //콘솔 출력 말고 log출력으로..
             }
             //파일 저장 끝
-            postsPhotoRepository.save(postsPhoto);
+            postPhotos.add(postsPhoto);
         }
     }
 
