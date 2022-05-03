@@ -58,7 +58,7 @@ public class InitDB {
             String[] tags  = {"AirPods Series","AirPods Pro", "AirPods Max", "AirPods",
                         "iPad Pro", "iPad Air", "iPad mini", "Apple Watch Series",
                         "Apple Watch SE", "iPhone Series", "iPhone SE Series", "MacBook Air",
-                        "MacBook Pro", "iMac 24", "Display", "AirTag", "Mac mini", "Mac Studio", "Accessories",
+                        "MacBook Pro", "iMac 24\"", "Display", "AirTag", "Mac mini", "Mac Studio", "Accessories",
                         "Etc.", "Display", "AirTag", "Mac mini", "Mac Studio", "Mac Pro", "Mac", "iPad", "Watch", "iPhone"};
                 for (String tagName : tags) {
                     Tag tag = new Tag();
