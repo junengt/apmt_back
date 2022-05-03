@@ -123,37 +123,13 @@ public class PostService {
      * @param uid review 목록을 가져올 user의 id
      * @return  user의 후기 내역
      */
-    public List<ReviewListDto> findReviewsByUid(String uid) {
-        List<ReviewListDto> reviewList = new ArrayList<>();
-
-        List<TradeHistory> tradeHistories = tradeHistoryRepository.findTradeHistoriesByUid(uid);
-        for (TradeHistory tradeHistory : tradeHistories) {
-            System.out.println("tradeHistory = " + tradeHistory);
-            List<Review> reviews = tradeHistoryRepository.findReviewsByTradeHistoryId(tradeHistory.getId());
-            for (Review review : reviews) {
-                ReviewListDto reviewListDto = new ReviewListDto();
-                reviewListDto.setId(review.getId());
-                reviewListDto.setBuyer(tradeHistory.getUser());
-                reviewListDto.setContent(review.getContent());
-                reviewListDto.setAfterDate(Time.calculateTime(Timestamp.valueOf(review.getCreatedTime())));
-                reviewList.add(reviewListDto);
-            }
-        }
-        return reviewList;
-    }
 
     /**
      * uid에 해당하는 판매자의 uid, 전체 판매글 목록, 전체 후기 내역을 가져온다
      * @param uid 판매자의 uid
      * @return 판매자 정보(uid, 전체 판매글 목록, 전체 후기 내역)
      */
-    public SellerInfoDto getSellerInfoByUserId(String uid) {
-        SellerInfoDto sellerInfo = new SellerInfoDto();
-        sellerInfo.setSellerUid(uid);
-        sellerInfo.setPosts(findUserPostSellingList(uid));
-        sellerInfo.setReviews(findReviewsByUid(uid));
-        return sellerInfo;
-    }
+
 
     public List<PostListDto> findUserLikePostList(String uid){
         List<LikePost> likePosts = postRepository.findPostsByLike(uid);

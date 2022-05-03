@@ -24,6 +24,8 @@ public class QReview extends EntityPathBase<Review> {
 
     public final click.applemt.apmt.domain.common.QBaseEntity _super = new click.applemt.apmt.domain.common.QBaseEntity(this);
 
+    public final StringPath buyerUid = createString("buyerUid");
+
     public final StringPath content = createString("content");
 
     //inherited
@@ -32,6 +34,8 @@ public class QReview extends EntityPathBase<Review> {
     public final BooleanPath deleted = createBoolean("deleted");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
+
+    public final StringPath sellerUid = createString("sellerUid");
 
     public final click.applemt.apmt.domain.point.QTradeHistory tradeHistory;
 
