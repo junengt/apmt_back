@@ -126,8 +126,6 @@ public class InitDB {
                     user = userRepository.findByUid(user2.getUid()).get();
                 }
 
-
-
                 String tagsJson = (String) jsonObject.get("tags");
                 String[] tagsSplit = tagsJson.split(",");
 
@@ -176,6 +174,8 @@ public class InitDB {
                 // 구매자 User3이 후기내역을 작성했다는 가정
                 Review review = new Review();
                 review.setTradeHistory(history);
+                review.setSellerUid(post.getUser().getUid());
+                review.setBuyerUid(user3.getUid());
                 review.setContent("판매자님이 친절해요. "+idx);
                 em.persist(review);
 

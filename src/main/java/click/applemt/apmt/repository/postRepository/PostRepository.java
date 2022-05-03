@@ -64,8 +64,6 @@ public interface PostRepository extends JpaRepository<Post,Long> ,PostRepository
     @Query("SELECT p.user.uid FROM Post p WHERE p.deleted=false AND p.id = :postId")
     String getUserIdByPostId(Long postId);
 
-    // 구현중
-    @Query("SELECT r FROM Review r")
-    List<Review> findReviewsByUid(String uid);
+
 
 }

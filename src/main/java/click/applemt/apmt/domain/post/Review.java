@@ -24,6 +24,12 @@ public class Review extends BaseEntity {
     @JoinColumn(name = "trade_history_id")
     private TradeHistory tradeHistory;
 
+    @Column(name = "review_seller_uid")
+    private String sellerUid;   // 리뷰를 받은 판매자의 UID
+
+    @Column(name = "review_buyer_uid")
+    private String buyerUid;    // 리뷰를 작성한 구매자의 UID
+
     @Column(name = "review_content")
     private String content;
 

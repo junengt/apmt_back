@@ -9,18 +9,19 @@ import click.applemt.apmt.controller.post.PostUpdateForm;
 import click.applemt.apmt.controller.post.PostUpdateReqDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.post.*;
+import click.applemt.apmt.repository.reviewRepository.ReviewRepository;
 import click.applemt.apmt.repository.postRepository.PostRepository;
 import click.applemt.apmt.repository.postRepository.PostRepositoryCustom;
 import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
 import click.applemt.apmt.repository.postRepository.TagRepository;
+import click.applemt.apmt.repository.reviewRepository.ReviewRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
 import click.applemt.apmt.security.AuthUser;
 import click.applemt.apmt.repository.tradeHistroyRepository.TradeHistoryRepository;
+import click.applemt.apmt.repository.userRepository.UserRepository;
 import click.applemt.apmt.util.Time;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseToken;
-import com.google.firebase.auth.UserRecord;
+import com.google.api.core.ApiFuture;
+import com.google.firebase.auth.*;
 import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +57,7 @@ public class PostService {
     private final UserRepository userRepository;
     private final PostsPhotoRepository postsPhotoRepository;
     private final TradeHistoryRepository tradeHistoryRepository;
+    private final ReviewRepository reviewRepository;
 
     private final FirebaseInit firebaseInit;
 
@@ -111,6 +115,7 @@ public class PostService {
             buyingList.add(postListReviewDto);
         }
         return buyingList;
+
     }
 
     /**
@@ -189,7 +194,6 @@ public class PostService {
         postDto.setId(findPost.getId());
         postDto.setRegion(findPost.getTown());
         postDto.setPrice(findPost.getPrice());
-        postDto.setView(findPost.getView());
 
         return postDto;
 
