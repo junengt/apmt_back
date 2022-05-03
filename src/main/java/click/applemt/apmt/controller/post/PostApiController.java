@@ -3,6 +3,7 @@ package click.applemt.apmt.controller.post;
 import click.applemt.apmt.security.AuthUser;
 import click.applemt.apmt.security.util.RequestUtil;
 import click.applemt.apmt.service.PostService;
+import click.applemt.apmt.service.ReviewService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
@@ -25,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 public class PostApiController {
 
     private final PostService postService;
+    private final ReviewService reviewService;
     private final FirebaseAuth firebaseAuth;
 
     //등록된 중고거래 글 조회 API
@@ -64,8 +66,6 @@ public class PostApiController {
         return new Result(postService.findOne(id,decodedToken));
     }
 
-
-
     // 판매글에서 판매자의 판매 목록 조회 API
     /**
      * 판매자의 정보를 가져온다
@@ -74,12 +74,12 @@ public class PostApiController {
      */
     @GetMapping("/seller_profile/{uid}/info")
     public Result getSellerProfileByUid(@PathVariable String uid) throws FirebaseAuthException {
-        return new Result(postService.getSellerInfoByUserId(uid));
+        return new Result(reviewService.getSellerInfoByUserId(uid));
     }
 
     @GetMapping("seller_profile/{uid}/reviews")
     public Result getReviewsByUid(@PathVariable String uid) throws FirebaseAuthException, ExecutionException, InterruptedException {
-        return new Result(postService.getSellerReviewsBySellerId(uid));
+        return new Result(reviewService.getSellerReviewsBySellerId(uid));
     }
 
     @GetMapping("/seller_profile/{uid}/posts")

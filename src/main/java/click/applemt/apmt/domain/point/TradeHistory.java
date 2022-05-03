@@ -22,7 +22,7 @@ public class TradeHistory extends BaseEntity {
 
     @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL) //단방향 연관관계 설계
     @JoinColumn(name = "user_id")
-    private User user;      // 판매자
+    private User user;      // 구매자
 
     @ManyToOne(fetch = LAZY,cascade = CascadeType.ALL) //단방향 연관관계 설계
     @JoinColumn(name = "posts_id")
