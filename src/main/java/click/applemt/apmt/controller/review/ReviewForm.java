@@ -8,5 +8,4 @@ public class ReviewForm {
     private Long tradeId;
     private String content;
 
-
 }

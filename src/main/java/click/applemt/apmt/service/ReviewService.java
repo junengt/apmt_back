@@ -38,6 +38,8 @@ public class ReviewService {
         Review review = new Review();
         review.setTradeHistory(trade);
         review.setContent(reviewForm.getContent());
+        review.setBuyerUid(trade.getUser().getUid());
+        review.setSellerUid(trade.getPost().getUser().getUid());
 
         Review save = reviewRepository.save(review);
 

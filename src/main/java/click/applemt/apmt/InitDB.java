@@ -47,59 +47,26 @@ public class InitDB {
             InputStream file = resourceLoader.getResource("classpath:/static/carrot.json").getInputStream();
             ArrayList<JSONObject> jsonObjects = (ArrayList<JSONObject>) parser.parse(new InputStreamReader(file));
             // 통일성 있는 데이터는 한번만 persist 한다
-            Tag tag = new Tag();
-            tag.setName("Mac");
-            em.persist(tag);
 
-            Tag tag1 = new Tag();
-            tag1.setName("MacBook Pro");
-            em.persist(tag1);
 
-            List<Tag> tags = new ArrayList<>();
-            tags.add(tag);
-            tags.add(tag1);
+            List<Tag> tagList = new ArrayList<>();
+            String[] tags  = {"AirPods Series","AirPods Pro", "AirPods Max", "AirPods",
+                        "iPad Pro", "iPad Air", "iPad mini", "Apple Watch Series",
+                        "Apple Watch SE", "iPhone Series", "iPhone SE Series", "MacBook Air",
+                        "MacBook Pro", "iMac 24\"", "Display", "AirTag", "Mac mini", "Mac Studio", "Accessories",
+                        "Etc.", "Display", "AirTag", "Mac mini", "Mac Studio", "Mac Pro", "Mac", "iPad", "Watch", "iPhone"};
+                for (String tagName : tags) {
+                    Tag tag = new Tag();
+                    tag.setName(tagName);
+                    em.persist(tag);
+                    tagList.add(tag);
+                }
 
-            //Test..
-
-            List<Tag> tags2 = new ArrayList<>();
-
-            Tag tag2 = new Tag();
-            tag2.setName("AirPod");
-            em.persist(tag2);
-
-            Tag tag3 = new Tag();
-            tag3.setName("수정된AirPod");
-            em.persist(tag3);
-
-            Tag tag4 = new Tag();
-            tag4.setName("AirPodPro");
-            em.persist(tag4);
-
-            tags2.add(tag2);
-            tags2.add(tag3);
-            tags2.add(tag4);
-
-            User usernew = new User();
-            usernew.setUid("KCIx9X9LVAMhggdTyGJh8Zqca1e2");
-            em.persist(usernew);
-
-            Post postnew = new Post();
-            postnew.setTags(tags);
-            postnew.setUser(usernew);
-            postnew.setTitle("에어팟 팔아요");
-            postnew.setContent("에어팟 판다구요");
-            postnew.setStatus(TradeStatus.ING);
-            postnew.setTown("서울시 구로구 구로동");
-            postnew.setPrice(10000l);
-            em.persist(postnew);
-
-//            PostsPhoto photo2 = new PostsPhoto();
-//            String img_src2 = "에어팟 이미지랄까";
-//            photo2.setPost(postnew);
-//            photo2.setPhotoPath(img_src2);
-//            em.persist(photo2);
-
-            //Test!!
+            Tag tag = tagList.get(12);
+            Tag tag2 = tagList.get(25);
+            List <Tag> tagList2 = new ArrayList<>();
+            tagList2.add(tag);
+            tagList2.add(tag2);
 
             int idx = 0;
 
@@ -126,6 +93,8 @@ public class InitDB {
                     user = userRepository.findByUid(user2.getUid()).get();
                 }
 
+
+
                 String tagsJson = (String) jsonObject.get("tags");
                 String[] tagsSplit = tagsJson.split(",");
 
@@ -148,7 +117,7 @@ public class InitDB {
                 } catch (NumberFormatException e) {
                     price = 0L;
                 }
-                post.setTags(tags);
+                post.setTags(tagList2);
                 post.setUser(user);
                 post.setTitle(title);
                 post.setContent(content);
@@ -174,8 +143,6 @@ public class InitDB {
                 // 구매자 User3이 후기내역을 작성했다는 가정
                 Review review = new Review();
                 review.setTradeHistory(history);
-                review.setSellerUid(post.getUser().getUid());
-                review.setBuyerUid(user3.getUid());
                 review.setContent("판매자님이 친절해요. "+idx);
                 em.persist(review);
 

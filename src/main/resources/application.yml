@@ -16,5 +16,5 @@ spring:
 #    key-alias: apple
 #    trust-store-password: 1q2w3e4r!
 #    key-store-password: 1q2w3e4r!
-#
+# https 보안 웹 페이지 사용시 필요한 곳이다. 리눅스서버 배포시에만 사용할 것.
 #

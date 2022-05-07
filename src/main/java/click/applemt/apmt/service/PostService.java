@@ -9,11 +9,8 @@ import click.applemt.apmt.controller.post.PostUpdateForm;
 import click.applemt.apmt.controller.post.PostUpdateReqDto;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.post.*;
+import click.applemt.apmt.repository.postRepository.*;
 import click.applemt.apmt.repository.reviewRepository.ReviewRepository;
-import click.applemt.apmt.repository.postRepository.PostRepository;
-import click.applemt.apmt.repository.postRepository.PostRepositoryCustom;
-import click.applemt.apmt.repository.postRepository.PostsPhotoRepository;
-import click.applemt.apmt.repository.postRepository.TagRepository;
 import click.applemt.apmt.repository.reviewRepository.ReviewRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
 import click.applemt.apmt.security.AuthUser;
@@ -53,8 +50,8 @@ public class PostService {
 
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
-    private final PostRepositoryCustom postRepositoryCustom;
     private final UserRepository userRepository;
+    private final LikePostRepository likePostRepository;
     private final PostsPhotoRepository postsPhotoRepository;
     private final TradeHistoryRepository tradeHistoryRepository;
     private final ReviewRepository reviewRepository;
@@ -164,13 +161,19 @@ public class PostService {
         postDto.setPhotoList(findPost.getPhotoList());
         postDto.setTags(findPost.getTags().stream().map(e -> e.getName()).toList());
         postDto.setTitle(findPost.getTitle());
-        if (decodedToken != null)
+        if (decodedToken != null){
             postDto.setOwner(decodedToken.getUid().equals(uid));
+            User authUser = userRepository.getById(decodedToken.getUid());
+            postDto.setBooleanLike(likePostRepository.findByUserAndPost(authUser,findPost).isPresent());
+
+        }
         postDto.setStatus(findPost.getStatus());
         postDto.setId(findPost.getId());
         postDto.setRegion(findPost.getTown());
         postDto.setPrice(findPost.getPrice());
-
+        postDto.setView(findPost.getView());
+        List<LikePost> likePosts = likePostRepository.findByPostId(findPost.getId());
+        postDto.setLike(likePosts.size());
         return postDto;
 
     }
@@ -381,7 +384,7 @@ public class PostService {
         private String title;
         private Long price;
         private String content;
-        private String Region;
+        private String region;
         private TradeStatus status;
 
         public PostListDto() {
@@ -402,7 +405,7 @@ public class PostService {
         private String title;
         private Long price;
         private String content;
-        private String Region;
+        private String region;
         private TradeStatus status;
     }
     @Getter
@@ -419,10 +422,12 @@ public class PostService {
         private String title;
         private Long price;
         private String content;
-        private String Region;
+        private String region;
         private TradeStatus status;
         private boolean isOwner;
+        private Integer like;
         private List<String> tags;
         private Integer view;
+        private boolean booleanLike;
     }
 }
