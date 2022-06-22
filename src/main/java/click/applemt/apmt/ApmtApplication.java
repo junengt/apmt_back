@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 public class ApmtApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApmtApplication.class, args);
+        SpringApplication.run(ApmtApplication.class, args);//test com
     }
 
 }
