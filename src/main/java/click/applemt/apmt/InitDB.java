@@ -22,7 +22,6 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-@Profile("local")
 public class InitDB {
 
     private final InitService initService;
