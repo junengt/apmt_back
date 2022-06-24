@@ -237,10 +237,6 @@ public class PostService {
         if (!findPost.getPhotoList().isEmpty() && CollectionUtils.isEmpty(files)) {
             postPhotos.clear();
         }
-//        //Post를 수정할때 이미지가 이미 존재한다면 레파지토리에서 삭제함
-//        if (!findPost.getPhotoList().isEmpty()) {
-//            postPhotos.clear();
-//        }
         String absolPath =  new File("").getAbsolutePath() + "/images/" ;
         String postPath =  "postId_"+ postId +"/";
         deleteFiles(paths, absolPath, postPath);
@@ -377,6 +373,7 @@ public class PostService {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public class PostListDto {
         private Long id;
         private String afterDate;
@@ -386,10 +383,6 @@ public class PostService {
         private String content;
         private String region;
         private TradeStatus status;
-
-        public PostListDto() {
-
-        }
     }
 
 
