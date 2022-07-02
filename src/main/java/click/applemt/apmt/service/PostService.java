@@ -1,43 +1,30 @@
 package click.applemt.apmt.service;
 
-import click.applemt.apmt.config.FirebaseInit;
 import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.point.TradeHistory;
 import click.applemt.apmt.controller.post.PostReqDto;
 import click.applemt.apmt.controller.post.PostSearchCondition;
-import click.applemt.apmt.controller.post.PostUpdateForm;
 import click.applemt.apmt.controller.post.PostUpdateReqDto;
-import click.applemt.apmt.domain.User;
 import click.applemt.apmt.domain.post.*;
 import click.applemt.apmt.repository.postRepository.*;
-import click.applemt.apmt.repository.reviewRepository.ReviewRepository;
-import click.applemt.apmt.repository.reviewRepository.ReviewRepository;
 import click.applemt.apmt.repository.userRepository.UserRepository;
 import click.applemt.apmt.security.AuthUser;
-import click.applemt.apmt.repository.tradeHistroyRepository.TradeHistoryRepository;
-import click.applemt.apmt.repository.userRepository.UserRepository;
 import click.applemt.apmt.util.Time;
-import com.google.api.core.ApiFuture;
 import com.google.firebase.auth.*;
 import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -53,10 +40,6 @@ public class PostService {
     private final UserRepository userRepository;
     private final LikePostRepository likePostRepository;
     private final PostsPhotoRepository postsPhotoRepository;
-    private final TradeHistoryRepository tradeHistoryRepository;
-    private final ReviewRepository reviewRepository;
-
-    private final FirebaseInit firebaseInit;
 
     //검색어가 없다면 모든 목록 or 검색어가 있다면 검색어에 맞는 목록 노출
     public List<PostListDto> findAllPostAndSearchKeyword(PostSearchCondition searchCond) {

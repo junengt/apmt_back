@@ -42,6 +42,7 @@ public class InitDB {
         private final ResourceLoader resourceLoader;
 
         public void doInit() throws IOException, ParseException {
+
             JSONParser parser = new JSONParser();
             InputStream file = resourceLoader.getResource("classpath:/static/carrot.json").getInputStream();
             ArrayList<JSONObject> jsonObjects = (ArrayList<JSONObject>) parser.parse(new InputStreamReader(file));

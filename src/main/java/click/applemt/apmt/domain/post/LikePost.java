@@ -30,7 +30,4 @@ public class LikePost {
         this.post = post;
     }
 
-    public LikePost() {
-
-    }
 }
